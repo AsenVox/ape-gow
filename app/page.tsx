@@ -1,22 +1,22 @@
-import { paiGow } from "@/components/pai-gow/paiGowConfig";
-import PaiGowGame from "@/components/pai-gow/PaiGowGame";
+import { myGame } from "@/components/my-game/myGameConfig";
+import MyGameComponent from "@/components/my-game/MyGame";
 
 export async function generateMetadata() {
   return {
-    title: paiGow.title,
-    description: paiGow.description,
+    title: myGame.title,
+    description: myGame.description,
   };
 }
 
-const PaiGowPage: React.FC = () => {
+const MyGamePage: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="flex flex-row mb-2 sm:mb-4">
-        <h1 className="text-3xl font-semibold mr-2">{paiGow.title}</h1>
+        <h1 className="text-3xl font-semibold mr-2">{myGame.title}</h1>
       </div>
-      <PaiGowGame game={paiGow} />
+      <MyGameComponent />
     </div>
   );
 };
 
-export default PaiGowPage;
+export default MyGamePage;
