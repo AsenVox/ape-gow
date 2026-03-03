@@ -7,6 +7,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 import { hashSeedToU32 } from "@/lib/pai-gow-sim/prng";
+import type { Card as SimCard, SevenCardHand, PlayerSplit as SimPlayerSplit, FiveCardHand, TwoCardHand } from "@/lib/pai-gow-sim/types";
 import { dealRound } from "@/lib/pai-gow-sim/deal";
 import { validateSplit } from "@/lib/pai-gow-sim/split";
 import { settleRound } from "@/lib/pai-gow-sim/settle";
@@ -19,7 +20,7 @@ import { CardFace } from "./CardFace";
 // NOTE: We load assets from /public via absolute paths (Next.js safe).
 const acLogo = "/pai-gow/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
 
-type Card = { rank: string; suit: string };
+type Card = SimCard;
 
 type PlayerSplit = { low: [Card, Card]; high: [Card, Card, Card, Card, Card] };
 
@@ -143,8 +144,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     const seedU32 = hashSeedToU32(seed);
     const deal = dealRound(seedU32);
 
-    const player7 = deal.player as any as Card[];
-    const house7 = deal.house as any as Card[];
+    const player7 = deal.player as unknown as Card[];
+    const house7 = deal.house as unknown as Card[];
 
     const playerSplit: PlayerSplit | null =
       lowIdx.length === 2 && highIdx.length === 5
@@ -160,11 +161,11 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           }
         : null;
 
-    const houseSplitRaw = houseWayV0(house7 as any) as any as PlayerSplit;
+    const houseSplitRaw = houseWayV0(house7 as unknown as SevenCardHand) as unknown as SimPlayerSplit;
     // Re-order for a "Vegas clean" presentation: group pairs/trips together, high→low.
     const houseSplit: PlayerSplit = {
-      high: sortCardsForDisplay(houseSplitRaw.high) as any,
-      low: sortCardsForDisplay(houseSplitRaw.low) as any,
+      high: sortCardsForDisplay(houseSplitRaw.high) as unknown as PlayerSplit["high"],
+      low: sortCardsForDisplay(houseSplitRaw.low) as unknown as PlayerSplit["low"],
     };
 
     // Map dealer's 7 cards -> target slot (High 0-4, Low 0-1) so we can animate into position.
@@ -195,14 +196,14 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     }
 
     const validation = playerSplit
-      ? validateSplit(deal.player as any, playerSplit as any)
+      ? validateSplit(deal.player as unknown as SevenCardHand, playerSplit as unknown as SimPlayerSplit)
       : { ok: false, reason: "Pick 2 cards for Low and 5 for High." };
 
     const res =
       playerSplit && validation.ok
         ? settleRound({
-            deal: deal as any,
-            playerSplit: playerSplit as any,
+            deal: deal as unknown as { player: SevenCardHand; house: SevenCardHand },
+            playerSplit: playerSplit as unknown as SimPlayerSplit,
             mainWager: main,
             sideWager: side,
             pushAceHighWager: push,
@@ -210,8 +211,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           })
         : null;
 
-    const dealerHighName = handName5(eval5(houseSplit.high as any).category);
-    const dealerLowName = handName2(eval2(houseSplit.low as any).category);
+    const dealerHighName = handName5(eval5(houseSplit.high as unknown as FiveCardHand).category);
+    const dealerLowName = handName2(eval2(houseSplit.low as unknown as TwoCardHand).category);
 
     return {
       seedU32,
@@ -439,7 +440,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
       return -1;
     }
 
-    const split = houseWayV0(cards as any) as any as PlayerSplit;
+    const split = houseWayV0(cards as unknown as SevenCardHand) as unknown as SimPlayerSplit;
     const low = [pickIndexFor(split.low[0]), pickIndexFor(split.low[1])].filter((x) => x >= 0);
     const high = split.high.map(pickIndexFor).filter((x) => x >= 0);
 
@@ -467,38 +468,38 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const chipStyleFor = (v: number) => {
     // Poker-chip styling via CSS variables (used by rack chips).
     if (v === 1)
-      return {
+      return ({
         borderColor: "rgba(215,225,230,0.28)",
-        ["--chipColor" as any]: "#2a2a2a",
-        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
-      };
+        ["--chipColor"]: "#2a2a2a",
+        ["--chipStripe"]: "rgba(235,240,244,0.95)",
+      } as React.CSSProperties & Record<string, string>);
 
     if (v === 5)
-      return {
+      return ({
         borderColor: "rgba(105,174,251,0.55)",
-        ["--chipColor" as any]: "#1e4a86",
-        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
-      };
+        ["--chipColor"]: "#1e4a86",
+        ["--chipStripe"]: "rgba(235,240,244,0.95)",
+      } as React.CSSProperties & Record<string, string>);
 
     if (v === 10)
-      return {
+      return ({
         borderColor: "rgba(239,185,11,0.60)",
-        ["--chipColor" as any]: "#9a6a10",
-        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
-      };
+        ["--chipColor"]: "#9a6a10",
+        ["--chipStripe"]: "rgba(235,240,244,0.95)",
+      } as React.CSSProperties & Record<string, string>);
 
     if (v === 25)
-      return {
+      return ({
         borderColor: "rgba(140,255,0,0.52)",
-        ["--chipColor" as any]: "#2d7a21",
-        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
-      };
+        ["--chipColor"]: "#2d7a21",
+        ["--chipStripe"]: "rgba(235,240,244,0.95)",
+      } as React.CSSProperties & Record<string, string>);
 
-    return {
+    return ({
       borderColor: "rgba(215,225,230,0.38)",
-      ["--chipColor" as any]: "#3a3a3a",
-      ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
-    };
+      ["--chipColor"]: "#3a3a3a",
+      ["--chipStripe"]: "rgba(235,240,244,0.95)",
+    } as React.CSSProperties & Record<string, string>);
   };
 
   function placeMainChip() {

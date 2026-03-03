@@ -71,6 +71,11 @@ function fiveAces(cards: SevenCardHand): boolean {
   return aces === 4;
 }
 
+const toFiveCardHand = (cards: Card[]) => {
+  if (cards.length !== 5) throw new Error('Expected 5 cards');
+  return cards as unknown as [Card, Card, Card, Card, Card];
+};
+
 function bestFiveFromSeven(cards: SevenCardHand): { category: number; ranks: number[]; used: Card[] } {
   const arr = [...cards];
   let best: { category: number; ranks: number[] } | null = null;
@@ -80,7 +85,7 @@ function bestFiveFromSeven(cards: SevenCardHand): { category: number; ranks: num
     for (let b = a + 1; b < 7; b++) {
       // omit a,b => take the other 5
       const used = arr.filter((_, i) => i !== a && i !== b);
-      const r = eval5(used as any);
+      const r = eval5(toFiveCardHand(used));
       if (!best || compare5(r, best) > 0) {
         best = r;
         bestUsed = used;
@@ -92,7 +97,7 @@ function bestFiveFromSeven(cards: SevenCardHand): { category: number; ranks: num
 
 function isRoyalFlush(used5: Card[]): boolean {
   // Must be a straight flush with high card Ace (14) and contain T,J,Q,K,A (joker may stand in)
-  const r = eval5(used5 as any);
+  const r = eval5(toFiveCardHand(used5));
   if (r.category !== 8) return false;
   if ((r.ranks[0] ?? 0) !== 14) return false;
 

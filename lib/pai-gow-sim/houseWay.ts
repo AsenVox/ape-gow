@@ -1,4 +1,4 @@
-import type { PlayerSplit, SevenCardHand, TwoCardHand, FiveCardHand } from './types';
+import type { PlayerSplit, SevenCardHand, TwoCardHand, FiveCardHand, Card } from './types';
 import { eval2, compare2 } from './eval2';
 import { eval5, compare5 } from './eval5';
 
@@ -32,7 +32,7 @@ export function houseWayV0(seven: SevenCardHand): PlayerSplit {
 
   for (const high of c5s) {
     // remaining 2
-    const remaining: any[] = [];
+    const remaining: Card[] = [];
     const counts = new Map<string, number>();
     for (const c of cards) {
       const id = c.rank + c.suit;

@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+
+    // Desktop reference components (not shipped / not part of submission)
+    "components/pai-gow/_desktop/**",
+    "components/pai-gow/_desktop_App.tsx",
   ]),
 ]);
 

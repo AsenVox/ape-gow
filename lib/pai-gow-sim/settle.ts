@@ -1,4 +1,4 @@
-import type { Outcome, PlayerSplit, RoundDeal } from './types';
+import type { Outcome, PlayerSplit, RoundDeal, FiveCardHand, Card } from './types';
 import { eval2, compare2 } from './eval2';
 import { eval5, compare5 } from './eval5';
 import { houseWayV0 } from './houseWay';
@@ -69,15 +69,20 @@ export function settleRound(args: {
 
   const houseSplit = houseWayV0(args.deal.house);
 
+  const toFiveCardHand = (cards: Card[]): FiveCardHand => {
+    if (cards.length !== 5) throw new Error('Expected 5 cards');
+    return cards as unknown as FiveCardHand;
+  };
+
   // Determine if dealer has an Ace-high pai gow (BEST 5-card hand is Ace-high).
   // That means: best 5-card category is High Card AND its top rank is Ace.
-  const best5 = (seven: any) => {
-    const cards = seven as any[];
-    let best: any = null;
+  const best5 = (seven: RoundDeal["player"] | RoundDeal["house"]) => {
+    const cards = [...seven];
+    let best: ReturnType<typeof eval5> | null = null;
     for (let omit1 = 0; omit1 < 7; omit1++) {
       for (let omit2 = omit1 + 1; omit2 < 7; omit2++) {
         const five = cards.filter((_, i) => i !== omit1 && i !== omit2);
-        const r = eval5(five as any);
+        const r = eval5(toFiveCardHand(five));
         if (!best || compare5(r, best) > 0) best = r;
       }
     }
@@ -95,7 +100,7 @@ export function settleRound(args: {
 
   // Side bet
   let sidePayout = 0;
-  let sideHit: any = undefined;
+  let sideHit: { name: string; multiplier: number } | undefined = undefined;
   const sideWager = args.sideWager ?? 0;
   if (sideWager > 0) {
     const hit = evalSideBets7(args.deal.player);
@@ -116,11 +121,11 @@ export function settleRound(args: {
 
   // Push Ace High side bet (Face Up Pai Gow)
   let pushAceHighPayout: number | undefined = undefined;
-  let pushAceHighHit: any = undefined;
+  let pushAceHighHit: { name: string; multiplier: number } | undefined = undefined;
   const pushWager = args.pushAceHighWager ?? 0;
   if (pushWager > 0) {
     if (dealerAceHighPaiGow) {
-      const dealerHasJoker = (args.deal.house as any[]).some((c) => c?.rank === 'X');
+      const dealerHasJoker = args.deal.house.some((c) => c.rank === 'X');
       const playerBest5 = best5(args.deal.player);
       const playerAceHigh = playerBest5.category === 0 && (playerBest5.ranks?.[0] ?? 0) === 14;
 

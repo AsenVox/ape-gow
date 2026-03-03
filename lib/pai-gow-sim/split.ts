@@ -9,7 +9,7 @@ export function validateSplit(seven: SevenCardHand, split: PlayerSplit): { ok: b
     const id = c.rank + c.suit;
     counts.set(id, (counts.get(id) ?? 0) + 1);
   }
-  const take = (c: any) => {
+  const take = (c: { rank: string; suit: string }) => {
     const id = c.rank + c.suit;
     const n = counts.get(id) ?? 0;
     if (n <= 0) return false;
