@@ -90,13 +90,31 @@
 }
 
 .rail{
+  position: relative;
+  overflow: hidden;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding: 14px 16px;
   border-bottom: 1px solid rgba(215,225,230,0.10);
-  background: rgba(10,10,10,0.55);
+  background: rgba(10,10,10,0.70);
 }
+
+/* subtle flair image behind the rail contents */
+.rail::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/pai-gow/banner.png');
+  background-size: cover;
+  background-position: 50% 45%;
+  opacity: 0.14;
+  filter: saturate(1.05) contrast(1.05) blur(0.5px);
+  transform: scale(1.06);
+  pointer-events: none;
+}
+
+.rail > *{ position: relative; z-index: 1; }
 
 .tableNoRail{
   padding-top: 10px;
