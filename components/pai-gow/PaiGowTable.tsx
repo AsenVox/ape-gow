@@ -739,10 +739,13 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
         {/* Bets UI (ported): chips stack on the bet spots */}
         <div className="zone">
           <div className="zoneHeader">
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <div className="zoneLabel">BETS</div>
               <div style={{ fontSize: 12, opacity: 0.72 }}>
                 Chips are units (1/5/10/25/100).
+              </div>
+              <div className="totalWagerPill" title="Total wager">
+                Total: <strong>{totalBet}</strong>
               </div>
             </div>
           </div>
