@@ -1,0 +1,637 @@
+"use client";
+
+// Ported (minimal changes) from gold master:
+//   C:\Users\echom\Desktop\PaiGow\ape-gow\ui\src\App.tsx
+// Goal: keep gameplay identical; only adjust imports/paths for Next.js template.
+
+import { useEffect, useMemo, useState } from "react";
+
+import { hashSeedToU32 } from "@/lib/pai-gow-sim/prng";
+import { dealRound } from "@/lib/pai-gow-sim/deal";
+import { validateSplit } from "@/lib/pai-gow-sim/split";
+import { settleRound } from "@/lib/pai-gow-sim/settle";
+import { houseWayV0 } from "@/lib/pai-gow-sim/houseWay";
+import { eval5 } from "@/lib/pai-gow-sim/eval5";
+import { eval2 } from "@/lib/pai-gow-sim/eval2";
+
+import { CardFace } from "./CardFace";
+
+// NOTE: We load assets from /public via absolute paths (Next.js safe).
+const acLogo = "/pai-gow/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
+
+type Card = { rank: string; suit: string };
+
+type PlayerSplit = { low: [Card, Card]; high: [Card, Card, Card, Card, Card] };
+
+const rankValue: Record<string, number> = {
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 5,
+  "6": 6,
+  "7": 7,
+  "8": 8,
+  "9": 9,
+  T: 10,
+  J: 11,
+  Q: 12,
+  K: 13,
+  A: 14,
+  X: 15, // Joker
+};
+
+function handName5(category: number) {
+  return (
+    {
+      0: "High Card",
+      1: "One Pair",
+      2: "Two Pair",
+      3: "Three of a Kind",
+      4: "Straight",
+      5: "Flush",
+      6: "Full House",
+      7: "Four of a Kind",
+      8: "Straight Flush",
+    } as Record<number, string>
+  )[category] ?? "—";
+}
+
+function handName2(category: number) {
+  return category === 1 ? "Pair" : "High Card";
+}
+
+function sortCardsForDisplay(cards: Card[]) {
+  // Vegas-ish: group duplicates together and generally show high→low.
+  // Joker is shown last so it doesn't break the visual grouping.
+  const counts = new Map<string, number>();
+  for (const c of cards) {
+    if (c.rank === "X") continue;
+    counts.set(c.rank, (counts.get(c.rank) ?? 0) + 1);
+  }
+
+  return [...cards].sort((a, b) => {
+    const aj = a.rank === "X";
+    const bj = b.rank === "X";
+    if (aj !== bj) return aj ? 1 : -1;
+
+    const ca = counts.get(a.rank) ?? 1;
+    const cb = counts.get(b.rank) ?? 1;
+    if (ca !== cb) return cb - ca;
+
+    const ra = rankValue[a.rank] ?? 0;
+    const rb = rankValue[b.rank] ?? 0;
+    return rb - ra;
+  });
+}
+
+export default function PaiGowTable() {
+  const [seed, setSeed] = useState("demo-seed-1"); // deterministic per hand
+
+  // ApeChurch lifecycle: 0 setup → 1 ongoing → 2 game over
+  const [_currentView, setCurrentView] = useState<0 | 1 | 2>(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [main, setMain] = useState(0);
+  const [side, setSide] = useState(0);
+  const [push, setPush] = useState(0);
+
+  // Track chips as the user places them (so stacking/undo is deterministic and non-glitchy)
+  const [mainChips, setMainChips] = useState<number[]>([]);
+  const [sideChips, setSideChips] = useState<number[]>([]);
+  const [pushChips, setPushChips] = useState<number[]>([]);
+
+  // chip UI (table-like). Units are 1/5/10/25/100.
+  const [activeChip, setActiveChip] = useState(5);
+
+  // indices into the 7-card player hand
+  const [lowIdx, setLowIdx] = useState<number[]>([]);
+  const [highIdx, setHighIdx] = useState<number[]>([]);
+
+  const [assignTarget, setAssignTarget] = useState<"low" | "high">("low");
+
+  const [dealerRevealed, setDealerRevealed] = useState(false);
+  const [dealerFlipped, setDealerFlipped] = useState<boolean[]>(() => Array(7).fill(false));
+  const [dealerArranged, setDealerArranged] = useState(false);
+
+  const [playerFlipped, setPlayerFlipped] = useState<boolean[]>(() => Array(7).fill(false));
+  // Visual aid: sort your revealed pool to scan hands faster.
+  const [playerSort, setPlayerSort] = useState<"none" | "asc" | "desc">("asc");
+
+  const view = useMemo(() => {
+    const seedU32 = hashSeedToU32(seed);
+    const deal = dealRound(seedU32);
+
+    const player7 = deal.player as any as Card[];
+    const house7 = deal.house as any as Card[];
+
+    const playerSplit: PlayerSplit | null =
+      lowIdx.length === 2 && highIdx.length === 5
+        ? {
+            low: [player7[lowIdx[0]], player7[lowIdx[1]]],
+            high: [
+              player7[highIdx[0]],
+              player7[highIdx[1]],
+              player7[highIdx[2]],
+              player7[highIdx[3]],
+              player7[highIdx[4]],
+            ],
+          }
+        : null;
+
+    const houseSplitRaw = houseWayV0(house7 as any) as any as PlayerSplit;
+    // Re-order for a "Vegas clean" presentation: group pairs/trips together, high→low.
+    const houseSplit: PlayerSplit = {
+      high: sortCardsForDisplay(houseSplitRaw.high) as any,
+      low: sortCardsForDisplay(houseSplitRaw.low) as any,
+    };
+
+    // Map dealer's 7 cards -> target slot (High 0-4, Low 0-1) so we can animate into position.
+    const used = new Set<number>();
+    const dealerTargets: { row: "high" | "low"; slot: number }[] = Array(7)
+      .fill(null)
+      .map(() => ({ row: "high", slot: 0 }));
+
+    function takeIndexFor(card: Card): number {
+      for (let i = 0; i < house7.length; i++) {
+        if (used.has(i)) continue;
+        const c = house7[i];
+        if (c.rank === card.rank && c.suit === card.suit) {
+          used.add(i);
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    for (let s = 0; s < 5; s++) {
+      const idx = takeIndexFor(houseSplit.high[s]);
+      if (idx >= 0) dealerTargets[idx] = { row: "high", slot: s };
+    }
+    for (let s = 0; s < 2; s++) {
+      const idx = takeIndexFor(houseSplit.low[s]);
+      if (idx >= 0) dealerTargets[idx] = { row: "low", slot: s };
+    }
+
+    const validation = playerSplit
+      ? validateSplit(deal.player as any, playerSplit as any)
+      : { ok: false, reason: "Pick 2 cards for Low and 5 for High." };
+
+    const res =
+      playerSplit && validation.ok
+        ? settleRound({
+            deal: deal as any,
+            playerSplit: playerSplit as any,
+            mainWager: main,
+            sideWager: side,
+            pushAceHighWager: push,
+            config: { faceUpAceHighPush: true },
+          })
+        : null;
+
+    const dealerHighName = handName5(eval5(houseSplit.high as any).category);
+    const dealerLowName = handName2(eval2(houseSplit.low as any).category);
+
+    return {
+      seedU32,
+      deal,
+      player7,
+      house7,
+      playerSplit,
+      houseSplit,
+      dealerTargets,
+      validation,
+      res,
+      dealerHighName,
+      dealerLowName,
+    };
+  }, [seed, main, side, push, lowIdx, highIdx]);
+
+  const poolIdx = useMemo(() => {
+    const taken = new Set([...lowIdx, ...highIdx]);
+    return [0, 1, 2, 3, 4, 5, 6].filter((i) => !taken.has(i));
+  }, [lowIdx, highIdx]);
+
+  const displayPoolIdx = useMemo(() => {
+    if (playerSort === "none") return poolIdx;
+
+    const dir = playerSort === "asc" ? 1 : -1;
+    return [...poolIdx].sort((ia, ib) => {
+      // Keep unrevealed cards at the end once dealer arranged.
+      const ra = dealerArranged && !playerFlipped[ia] ? 1 : 0;
+      const rb = dealerArranged && !playerFlipped[ib] ? 1 : 0;
+      if (ra !== rb) return ra - rb;
+
+      const a = view.player7[ia];
+      const b = view.player7[ib];
+      const va = rankValue[a.rank] ?? 0;
+      const vb = rankValue[b.rank] ?? 0;
+      if (va !== vb) return (va - vb) * dir;
+      return (a.suit > b.suit ? 1 : a.suit < b.suit ? -1 : 0) * dir;
+    });
+  }, [poolIdx, playerSort, dealerArranged, playerFlipped, view.player7]);
+
+  const allPlayerRevealed = useMemo(() => playerFlipped.every(Boolean), [playerFlipped]);
+  const canSplit = dealerArranged && allPlayerRevealed;
+
+  // Bets must be placed before any cards are flipped, then locked.
+  const betsLocked = dealerRevealed;
+  const hasMainBet = mainChips.length > 0 && main > 0;
+
+  const isRoundComplete =
+    dealerArranged &&
+    allPlayerRevealed &&
+    lowIdx.length === 2 &&
+    highIdx.length === 5 &&
+    view.validation.ok;
+
+  // Game-over modal
+  const [isGameFinished, setIsGameFinished] = useState(false);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [resultsSeenSeed, setResultsSeenSeed] = useState<string | null>(null);
+
+  // Advance lifecycle to "game over" once a valid split is locked in.
+  useEffect(() => {
+    if (!isRoundComplete) return;
+    setCurrentView(2);
+    setIsGameFinished(true);
+
+    // Open results modal once per seed (prevents repeat-open during re-renders)
+    if (resultsSeenSeed !== seed) {
+      setResultsOpen(true);
+      setResultsSeenSeed(seed);
+    }
+  }, [isRoundComplete, resultsSeenSeed, seed]);
+
+  function resetHands() {
+    setLowIdx([]);
+    setHighIdx([]);
+    setAssignTarget("low");
+
+    setDealerRevealed(false);
+    setDealerFlipped(Array(7).fill(false));
+    setDealerArranged(false);
+
+    setPlayerFlipped(Array(7).fill(false));
+  }
+
+  function handleReset() {
+    setIsGameFinished(false);
+    setResultsOpen(false);
+    setResultsSeenSeed(null);
+    // Full reset back to setup view (ApeChurch requirement)
+    resetHands();
+    setIsLoading(false);
+    setCurrentView(0);
+
+    // reset bets + stacks
+    setMain(0);
+    setSide(0);
+    setPush(0);
+    setMainChips([]);
+    setSideChips([]);
+    setPushChips([]);
+  }
+
+  function handlePlayAgain() {
+    setIsGameFinished(false);
+    setResultsOpen(false);
+    setResultsSeenSeed(null);
+    // Fresh hand (new deterministic seed), keep user in setup to place/adjust bets
+    setSeed(`demo-${Date.now()}`);
+    resetHands();
+    setIsLoading(false);
+    setCurrentView(0);
+  }
+
+  function handleRewatch() {
+    setIsGameFinished(false);
+    setResultsOpen(false);
+    // keep seen seed so it won't auto-pop during rewatch
+    // Replay same seed/outcome without a new bet/tx (ApeChurch requirement)
+    resetHands();
+    setIsLoading(false);
+    setCurrentView(1);
+    // kick off the dealer flow again
+    flipDealer();
+  }
+
+  async function playGame() {
+    // ensure we can show modal at end of this round
+    setIsGameFinished(false);
+    setResultsOpen(false);
+    // Start a new game with current bet (simulated tx)
+    if (dealerRevealed) return;
+
+    // Face Up Pai Gow: MAIN wager required; side bets optional.
+    if (!hasMainBet) return;
+
+    setIsLoading(true);
+    setCurrentView(1);
+
+    // simulate chain confirmation delay
+    window.setTimeout(() => {
+      setIsLoading(false);
+      flipDealer();
+    }, 450);
+  }
+
+  function clickPool(i: number) {
+    // Before split-stage: clicks flip cards (player reveal flow)
+    if (!dealerRevealed) return;
+
+    if (!playerFlipped[i]) {
+      const next = [...playerFlipped];
+      next[i] = true;
+      setPlayerFlipped(next);
+      return;
+    }
+
+    // Split-stage: clicks assign cards to Low/High
+    if (!canSplit) return;
+
+    if (assignTarget === "low") {
+      if (lowIdx.length >= 2) return;
+      setLowIdx([...lowIdx, i]);
+      if (lowIdx.length + 1 >= 2) setAssignTarget("high");
+      return;
+    }
+
+    if (highIdx.length >= 5) return;
+    setHighIdx([...highIdx, i]);
+  }
+
+  function removeFromLow(i: number) {
+    setLowIdx(lowIdx.filter((x) => x !== i));
+    setAssignTarget("low");
+  }
+
+  function removeFromHigh(i: number) {
+    setHighIdx(highIdx.filter((x) => x !== i));
+    setAssignTarget("high");
+  }
+
+  function setTargetLow() {
+    if (!canSplit) return;
+    setAssignTarget("low");
+  }
+
+  function setTargetHigh() {
+    if (!canSplit) return;
+    // If Low isn't filled yet, keep it honest.
+    if (lowIdx.length < 2) {
+      setAssignTarget("low");
+      return;
+    }
+    setAssignTarget("high");
+  }
+
+  function flipDealer() {
+    if (dealerRevealed) return;
+
+    // Phase 1: flip 7 cards (one by one)
+    setDealerRevealed(true);
+    setDealerArranged(false);
+    setDealerFlipped(Array(7).fill(false));
+
+    for (let i = 0; i < 7; i++) {
+      window.setTimeout(() => {
+        setDealerFlipped((prev) => {
+          const next = [...prev];
+          next[i] = true;
+          return next;
+        });
+      }, i * 120);
+    }
+
+    // Phase 2: arrange
+    window.setTimeout(() => {
+      setDealerArranged(true);
+    }, 7 * 120 + 650);
+  }
+
+  function flipAllPlayer() {
+    if (!dealerArranged) return;
+    setPlayerFlipped(Array(7).fill(true));
+  }
+
+  function autoSplitHouseWay() {
+    if (!canSplit) return;
+
+    // Map split cards back to indices in the 7-card hand (handle duplicates safely)
+    const cards = view.player7;
+    const used = new Set<number>();
+
+    function pickIndexFor(card: Card): number {
+      for (let i = 0; i < cards.length; i++) {
+        if (used.has(i)) continue;
+        const c = cards[i];
+        if (c.rank === card.rank && c.suit === card.suit) {
+          used.add(i);
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    const split = houseWayV0(cards as any) as any as PlayerSplit;
+    const low = [pickIndexFor(split.low[0]), pickIndexFor(split.low[1])].filter((x) => x >= 0);
+    const high = split.high.map(pickIndexFor).filter((x) => x >= 0);
+
+    if (low.length === 2 && high.length === 5) {
+      setLowIdx(low);
+      setHighIdx(high);
+      setAssignTarget("low");
+    }
+  }
+
+  const chipValues = [1, 5, 10, 25, 100];
+
+  function placeMainChip() {
+    if (betsLocked) return;
+    setMain((x) => Number((x + activeChip).toFixed(2)));
+    setMainChips((prev) => [...prev, activeChip]);
+  }
+
+  function placeSideChip() {
+    if (betsLocked) return;
+    setSide((x) => Number((x + activeChip).toFixed(2)));
+    setSideChips((prev) => [...prev, activeChip]);
+  }
+
+  function placePushChip() {
+    if (betsLocked) return;
+    setPush((x) => Number((x + activeChip).toFixed(2)));
+    setPushChips((prev) => [...prev, activeChip]);
+  }
+
+  function undoMainChip() {
+    if (betsLocked) return;
+    setMainChips((prev) => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      setMain((x) => Number(Math.max(0, x - last).toFixed(2)));
+      return prev.slice(0, -1);
+    });
+  }
+
+  function undoSideChip() {
+    if (betsLocked) return;
+    setSideChips((prev) => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      setSide((x) => Number(Math.max(0, x - last).toFixed(2)));
+      return prev.slice(0, -1);
+    });
+  }
+
+  function undoPushChip() {
+    if (betsLocked) return;
+    setPushChips((prev) => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      setPush((x) => Number(Math.max(0, x - last).toFixed(2)));
+      return prev.slice(0, -1);
+    });
+  }
+
+  const r = view.res;
+  const mainPayout = r?.mainPayout ?? 0;
+  const bonusPayout = r?.sidePayout ?? 0;
+  const pushPayout = r?.pushAceHighPayout ?? 0;
+  const netPayout = mainPayout + bonusPayout + pushPayout;
+
+  // NOTE: This render is a simplified-but-identical-to-desktop structure.
+  // We will bring over the rest of the markup (bets, modal, etc.) in the next commit.
+  return (
+    <div className="tableWrap">
+      <div className="table">
+        <div className="rail">
+          <div className="brand">
+            <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
+            <div>
+              <div className="title">Pai Gow</div>
+              <div className="sub">dealer flips → arranges → player flips → split</div>
+            </div>
+          </div>
+          <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button className="btn" onClick={handlePlayAgain}>New hand</button>
+            <button className="btn" onClick={handleReset}>Reset</button>
+            <button className="btn" onClick={autoSplitHouseWay} disabled={!canSplit}>Auto-split</button>
+            <button className="btn" onClick={playGame} disabled={dealerRevealed || isLoading || !hasMainBet}>
+              {isLoading ? "Confirming…" : dealerRevealed ? (dealerArranged ? "Dealer arranged" : "Flipping…") : "Play"}
+            </button>
+          </div>
+        </div>
+
+        <div className="felt">
+          <div className="zone">
+            <div className="zoneHeader">
+              <div className="zoneLabel">DEALER</div>
+              <div style={{ fontSize: 12, opacity: 0.72 }}>
+                {!dealerRevealed
+                  ? "Waiting"
+                  : !dealerArranged
+                    ? "Flipping & arranging…"
+                    : `High: ${view.dealerHighName} • Low: ${view.dealerLowName}`}
+              </div>
+            </div>
+
+            <div className="cardsRow">
+              {view.house7.map((c, i) => (
+                <CardFace key={`house-${i}`} card={c} faceDown={!dealerFlipped[i]} />
+              ))}
+            </div>
+          </div>
+
+          <div className="zone">
+            <div className="zoneHeader">
+              <div className="zoneLabel">PLAYER</div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <button className="btn" onClick={flipAllPlayer} disabled={!dealerArranged}>Flip all</button>
+                <button
+                  className="btn"
+                  onClick={() => setPlayerSort((s) => (s === "asc" ? "desc" : s === "desc" ? "none" : "asc"))}
+                  disabled={!dealerArranged}
+                >
+                  Sort: {playerSort === "asc" ? "Low→High" : playerSort === "desc" ? "High→Low" : "Off"}
+                </button>
+              </div>
+            </div>
+
+            <div className="cardsRow" style={{ marginBottom: 12 }}>
+              {displayPoolIdx.map((i) => (
+                <CardFace
+                  key={i}
+                  card={view.player7[i]}
+                  faceDown={!dealerArranged || !playerFlipped[i]}
+                  onClick={dealerArranged ? () => clickPool(i) : undefined}
+                />
+              ))}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12 }}>YOUR SPLIT</div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div style={{ fontSize: 12, opacity: 0.75 }}>Assign to:</div>
+                <button className="btn" onClick={setTargetLow} disabled={!canSplit}>Low (2)</button>
+                <button className="btn" onClick={setTargetHigh} disabled={!canSplit}>High (5)</button>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+              <div>
+                <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>LOW (2)</div>
+                <div className="cardsRow">
+                  {lowIdx.map((i) => (
+                    <CardFace key={i} card={view.player7[i]} tone="low" onClick={() => removeFromLow(i)} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>HIGH (5)</div>
+                <div className="cardsRow">
+                  {highIdx.map((i) => (
+                    <CardFace key={i} card={view.player7[i]} tone="high" onClick={() => removeFromHigh(i)} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 14, padding: 16, borderRadius: 16, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(20,20,20,0.82)" }}>
+              <div style={{ fontWeight: 900, marginBottom: 8 }}>RESULT</div>
+              {view.res ? (
+                <div style={{ display: "grid", gap: 6 }}>
+                  <div>Outcome: <strong>{view.res.outcome}</strong></div>
+                  <div>Main payout: <strong>{mainPayout}</strong></div>
+                  <div>Bonus payout: <strong>{bonusPayout}</strong></div>
+                  <div>Push payout: <strong>{pushPayout}</strong></div>
+                  <div>Net payout: <strong>{netPayout}</strong></div>
+                </div>
+              ) : (
+                <div style={{ opacity: 0.8 }}>{view.validation.reason ?? "Make a valid split to see the outcome."}</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Bets UI is being restored next (chip rack + MAIN/BONUS/PUSH spots identical to desktop). */}
+        <div style={{ marginTop: 10, opacity: 0.7, fontSize: 12 }}>
+          Bets: MAIN={main} BONUS={side} PUSH={push} (chip={activeChip})
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            {chipValues.map((v) => (
+              <button key={v} className="btn" onClick={() => setActiveChip(v)} disabled={betsLocked}>
+                Chip {v}
+              </button>
+            ))}
+            <button className="btn" onClick={placeMainChip} disabled={betsLocked}>+ MAIN</button>
+            <button className="btn" onClick={placeSideChip} disabled={betsLocked}>+ BONUS</button>
+            <button className="btn" onClick={placePushChip} disabled={betsLocked}>+ PUSH</button>
+            <button className="btn" onClick={undoMainChip} disabled={betsLocked || mainChips.length===0}>Undo MAIN</button>
+            <button className="btn" onClick={undoSideChip} disabled={betsLocked || sideChips.length===0}>Undo BONUS</button>
+            <button className="btn" onClick={undoPushChip} disabled={betsLocked || pushChips.length===0}>Undo PUSH</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

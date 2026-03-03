@@ -32,6 +32,7 @@
   ],
   "exclude": [
     "node_modules",
-    "components/pai-gow/_desktop/**/*"
+    "components/pai-gow/_desktop/**/*",
+    "components/pai-gow/_desktop_App.tsx"
   ]
 }
