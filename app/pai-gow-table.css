@@ -13,6 +13,7 @@
   min-height: 100vh;
   background: var(--felt);
   color: var(--text);
+  position: relative; /* so GameResultsModal absolute backdrop anchors correctly */
 }
 
 .table{

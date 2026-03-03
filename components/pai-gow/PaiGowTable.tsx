@@ -15,6 +15,7 @@ import { eval5 } from "@/lib/pai-gow-sim/eval5";
 import { eval2 } from "@/lib/pai-gow-sim/eval2";
 
 import { CardFace } from "./CardFace";
+import GameResultsModal from "@/components/shared/GameResultsModal";
 
 // NOTE: We load assets from /public via absolute paths (Next.js safe).
 const acLogo = "/pai-gow/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
@@ -549,10 +550,29 @@ export default function PaiGowTable() {
   const pushPayout = r?.pushAceHighPayout ?? 0;
   const netPayout = mainPayout + bonusPayout + pushPayout;
 
-  // NOTE: This render is a simplified-but-identical-to-desktop structure.
-  // We will bring over the rest of the markup (bets, modal, etc.) in the next commit.
+  const totalBet = main + side + push;
+
   return (
     <div className="tableWrap">
+      {resultsOpen && isGameFinished && r ? (
+        <GameResultsModal
+          key={String(view.seedU32)}
+          isOpen={resultsOpen}
+          payout={netPayout}
+          betAmount={totalBet}
+          usdMode={false}
+          apePrice={1}
+          isLoading={isLoading}
+          gameTitle="Pai Gow"
+          onReset={handleReset}
+          onPlayAgain={handlePlayAgain}
+          onRewatch={handleRewatch}
+          showPlayAgainOption={true}
+          showRewatchOption={true}
+          showPNL={true}
+          onClose={() => setResultsOpen(false)}
+        />
+      ) : null}
       <div className="table">
         <div className="rail">
           <div className="brand">
