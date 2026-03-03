@@ -738,17 +738,17 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           <div className="zoneHeader">
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <div className="zoneLabel">BETS</div>
-              <div style={{ fontSize: 12, opacity: 0.72, display: "inline-flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <span>Chips are units (1/5/10/25/100).</span>
+              <div style={{ fontSize: 12, display: "inline-flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <span style={{ opacity: 0.72 }}>Chips are units (1/5/10/25/100).</span>
 
-                <span className="infoWrap">
+                <span className="infoWrap" style={{ opacity: 1 }}>
                   <button type="button" className="infoIcon" aria-label="Paytable info" title="Paytable">
                     i
                   </button>
                   <div className="infoPopover" role="dialog" aria-label="Paytable">
                     <div style={{ fontWeight: 950, letterSpacing: 1.6, opacity: 0.9 }}>Paytable</div>
-                    <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.85 }}>
-                      <div style={{ fontWeight: 900, opacity: 0.9 }}>BONUS (7-card)</div>
+                    <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.92 }}>
+                      <div style={{ fontWeight: 900, opacity: 0.95 }}>BONUS (7-card)</div>
                       <div>7-card Straight Flush (no Joker): <strong>5000x</strong></div>
                       <div>Royal Flush + Royal Match: <strong>2000x</strong></div>
                       <div>7-card Straight Flush (with Joker): <strong>1000x</strong></div>
@@ -761,7 +761,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                       <div>Three of a Kind: <strong>3x</strong></div>
                       <div>Straight: <strong>2x</strong></div>
 
-                      <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.9 }}>PUSH (Ace High)</div>
+                      <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.95 }}>PUSH (Ace High)</div>
                       <div>If dealer best 5-card hand is Ace-high, MAIN pushes.</div>
                       <div>PUSH side bet pays: Dealer Ace High <strong>5x</strong>, w/ Joker <strong>15x</strong>, both Ace-high <strong>40x</strong>.</div>
                     </div>
