@@ -446,6 +446,55 @@ export default function PaiGowTable() {
 
   const chipValues = [1, 5, 10, 25, 100];
 
+  function wobbleStyle(v: number, i: number) {
+    // Stable wobble based on chip value + index (NOT total bet), so it doesn't "glitch" when the bet changes.
+    const t = Math.sin((v * 1000 + i * 97.13) * 12.9898) * 43758.5453;
+    const r = (t - Math.floor(t)) * 2 - 1;
+    const t2 = Math.sin((v * 1000 + i * 41.77) * 78.233) * 12345.6789;
+    const r2 = (t2 - Math.floor(t2)) * 2 - 1;
+
+    const x = r * 2.6; // px
+    const rot = r2 * 2.0; // deg
+    return { x, rot };
+  }
+
+  const chipStyleFor = (v: number) => {
+    // Poker-chip styling via CSS variables (used by rack chips).
+    if (v === 1)
+      return {
+        borderColor: "rgba(215,225,230,0.28)",
+        ["--chipColor" as any]: "#2a2a2a",
+        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
+      };
+
+    if (v === 5)
+      return {
+        borderColor: "rgba(105,174,251,0.55)",
+        ["--chipColor" as any]: "#1e4a86",
+        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
+      };
+
+    if (v === 10)
+      return {
+        borderColor: "rgba(239,185,11,0.60)",
+        ["--chipColor" as any]: "#9a6a10",
+        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
+      };
+
+    if (v === 25)
+      return {
+        borderColor: "rgba(140,255,0,0.52)",
+        ["--chipColor" as any]: "#2d7a21",
+        ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
+      };
+
+    return {
+      borderColor: "rgba(215,225,230,0.38)",
+      ["--chipColor" as any]: "#3a3a3a",
+      ["--chipStripe" as any]: "rgba(235,240,244,0.95)",
+    };
+  };
+
   function placeMainChip() {
     if (betsLocked) return;
     setMain((x) => Number((x + activeChip).toFixed(2)));
@@ -536,7 +585,7 @@ export default function PaiGowTable() {
               </div>
             </div>
 
-            <div className="cardsRow">
+            <div className="cardsRow cardsRowScroll">
               {view.house7.map((c, i) => (
                 <CardFace key={`house-${i}`} card={c} faceDown={!dealerFlipped[i]} />
               ))}
@@ -558,7 +607,7 @@ export default function PaiGowTable() {
               </div>
             </div>
 
-            <div className="cardsRow" style={{ marginBottom: 12 }}>
+            <div className="cardsRow cardsRowScroll" style={{ marginBottom: 12 }}>
               {displayPoolIdx.map((i) => (
                 <CardFace
                   key={i}
@@ -614,21 +663,163 @@ export default function PaiGowTable() {
           </div>
         </div>
 
-        {/* Bets UI is being restored next (chip rack + MAIN/BONUS/PUSH spots identical to desktop). */}
-        <div style={{ marginTop: 10, opacity: 0.7, fontSize: 12 }}>
-          Bets: MAIN={main} BONUS={side} PUSH={push} (chip={activeChip})
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-            {chipValues.map((v) => (
-              <button key={v} className="btn" onClick={() => setActiveChip(v)} disabled={betsLocked}>
-                Chip {v}
-              </button>
-            ))}
-            <button className="btn" onClick={placeMainChip} disabled={betsLocked}>+ MAIN</button>
-            <button className="btn" onClick={placeSideChip} disabled={betsLocked}>+ BONUS</button>
-            <button className="btn" onClick={placePushChip} disabled={betsLocked}>+ PUSH</button>
-            <button className="btn" onClick={undoMainChip} disabled={betsLocked || mainChips.length===0}>Undo MAIN</button>
-            <button className="btn" onClick={undoSideChip} disabled={betsLocked || sideChips.length===0}>Undo BONUS</button>
-            <button className="btn" onClick={undoPushChip} disabled={betsLocked || pushChips.length===0}>Undo PUSH</button>
+        {/* Bets UI (ported): chips stack on the bet spots */}
+        <div className="zone">
+          <div className="zoneHeader">
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="zoneLabel">BETS</div>
+              <div style={{ fontSize: 12, opacity: 0.72 }}>
+                Chips are units (1/5/10/25/100).
+              </div>
+            </div>
+          </div>
+
+          <div className="betLane">
+            <button className="betSpot betSpotBonus" onClick={placeSideChip} disabled={betsLocked} title="Place Bonus bet">
+              <div className="chipStack" aria-hidden>
+                {sideChips.slice(0, 22).map((v, i) => {
+                  const w = wobbleStyle(v, i);
+                  return (
+                    <div
+                      key={`side-${i}`}
+                      className={`stackChip chipV${v}`}
+                      style={{
+                        bottom: i * 4,
+                        left: `${w.x}px`,
+                        transform: `rotate(${w.rot}deg) translateZ(0)`,
+                      }}
+                    >
+                      {v}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {sideChips.length ? (
+                <button
+                  type="button"
+                  className="betBackBtn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    undoSideChip();
+                  }}
+                  disabled={betsLocked}
+                  title="Remove last chip"
+                  aria-label="Remove last chip"
+                >
+                  ↩
+                </button>
+              ) : null}
+
+              <div className="betContent">
+                <div className="betName">BONUS</div>
+                <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{side}</div>
+              </div>
+            </button>
+
+            <button className="betSpot betSpotPush" onClick={placePushChip} disabled={betsLocked} title="Place Push Ace High bet">
+              <div className="chipStack" aria-hidden>
+                {pushChips.slice(0, 22).map((v, i) => {
+                  const w = wobbleStyle(v, i);
+                  return (
+                    <div
+                      key={`push-${i}`}
+                      className={`stackChip chipV${v}`}
+                      style={{
+                        bottom: i * 4,
+                        left: `${w.x}px`,
+                        transform: `rotate(${w.rot}deg) translateZ(0)`,
+                      }}
+                    >
+                      {v}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {pushChips.length ? (
+                <button
+                  type="button"
+                  className="betBackBtn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    undoPushChip();
+                  }}
+                  disabled={betsLocked}
+                  title="Remove last chip"
+                  aria-label="Remove last chip"
+                >
+                  ↩
+                </button>
+              ) : null}
+
+              <div className="betContent">
+                <div className="betName">PUSH</div>
+                <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{push}</div>
+              </div>
+            </button>
+
+            <button className="betSpot betSpotMain" onClick={placeMainChip} disabled={betsLocked} title="Place Main bet">
+              <div className="chipStack" aria-hidden>
+                {mainChips.slice(0, 22).map((v, i) => {
+                  const w = wobbleStyle(v, i);
+                  return (
+                    <div
+                      key={`main-${i}`}
+                      className={`stackChip chipV${v}`}
+                      style={{
+                        bottom: i * 4,
+                        left: `${w.x}px`,
+                        transform: `rotate(${w.rot}deg) translateZ(0)`,
+                      }}
+                    >
+                      {v}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {mainChips.length ? (
+                <button
+                  type="button"
+                  className="betBackBtn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    undoMainChip();
+                  }}
+                  disabled={betsLocked}
+                  title="Remove last chip"
+                  aria-label="Remove last chip"
+                >
+                  ↩
+                </button>
+              ) : null}
+
+              <div className="betContent">
+                <div className="betName">MAIN</div>
+                <div className="betValue" style={{ marginTop: 6, fontWeight: 900, fontSize: 18 }}>{main}</div>
+              </div>
+            </button>
+          </div>
+
+          <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
+            <div className="chipRack">
+              {chipValues.map((v) => (
+                <button
+                  key={v}
+                  className={v === activeChip ? "chip chipActive" : "chip"}
+                  onClick={() => setActiveChip(v)}
+                  disabled={betsLocked}
+                  style={chipStyleFor(v)}
+                  title={`Select ${v} chip`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
