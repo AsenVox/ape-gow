@@ -4,6 +4,7 @@ import { Suit } from './Suit'
 import { suitColor, suitSymbol } from './suitUtils'
 
 const backLogo = '/pai-gow/assets/back-logo.png'
+const cardBackPng = '/pai-gow/assets/card-back.png'
 const jokerCard = '/pai-gow/assets/cards/JOKER.png'
 
 // Next.js note: Vite's `import.meta.glob` isn't available.
@@ -140,10 +141,26 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
               Use the provided backLogo as a MASK, not as an image.
               This removes any baked-in rectangle/background from the PNG and guarantees a clean cutout.
             */}
+            {/* Primary: use the prebuilt card-back art (most consistent across browsers) */}
+            <img
+              src={cardBackPng}
+              alt="Card back"
+              style={{
+                width: '86%',
+                height: '86%',
+                objectFit: 'contain',
+                filter:
+                  'drop-shadow(0 2px 2px rgba(0,0,0,0.85)) drop-shadow(0 14px 22px rgba(0,0,0,0.55))',
+              }}
+            />
+
+            {/* Fallback: if the card-back asset ever changes, keep the pure logo mask approach here. */}
             <div
               style={{
                 width: '72%',
                 height: '72%',
+                position: 'absolute',
+                inset: 'auto',
                 backgroundColor: 'var(--ac-green)',
                 WebkitMaskImage: `url(${backLogo})`,
                 maskImage: `url(${backLogo})`,
@@ -153,8 +170,7 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
                 maskPosition: 'center',
                 WebkitMaskSize: 'contain',
                 maskSize: 'contain',
-                filter:
-                  'drop-shadow(0 2px 2px rgba(0,0,0,0.85)) drop-shadow(0 14px 22px rgba(0,0,0,0.55))',
+                opacity: 0.0,
               }}
             />
           </div>
