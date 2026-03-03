@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* --- Pai Gow (ported from Desktop\PaiGow\ape-gow\ui\src\table.css) --- */
+
 :root {
   --font-roboto: "Roboto", sans-serif;
   --font-display: "Nohemia", sans-serif;
