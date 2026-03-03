@@ -192,7 +192,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     playsInline
                     controls={false}
                     disablePictureInPicture={true}
-                    className="w-full h-full object-cover rounded-[8px] pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover rounded-[8px] pointer-events-none"
                 />
             ) : (
                 <Image
@@ -200,7 +200,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     alt="Game Background"
                     width={719}
                     height={719}
-                    className="w-full h-full object-cover rounded-[8px] opacity-75"
+                    className="absolute inset-0 w-full h-full object-cover rounded-[8px] opacity-75"
                     style={{
                         minHeight: customHeightMobile ? customHeightMobile : "100%",
                     }}
@@ -208,7 +208,9 @@ const GameWindow: React.FC<GameWindowProps> = ({
                 />
             )}
 
-            {children}
+            <div className="relative z-10 w-full h-full">
+                {children}
+            </div>
 
             <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
                 <Button
