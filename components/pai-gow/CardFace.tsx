@@ -70,9 +70,12 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
   void shine
   useEffect(() => {
     if (!faceDown) {
-      setShine(true)
-      const t = window.setTimeout(() => setShine(false), 650)
-      return () => window.clearTimeout(t)
+      const t0 = window.setTimeout(() => setShine(true), 0)
+      const t1 = window.setTimeout(() => setShine(false), 650)
+      return () => {
+        window.clearTimeout(t0)
+        window.clearTimeout(t1)
+      }
     }
   }, [faceDown])
 

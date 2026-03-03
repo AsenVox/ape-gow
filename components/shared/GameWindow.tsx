@@ -110,19 +110,29 @@ const GameWindow: React.FC<GameWindowProps> = ({
         onSfxMutedChange?.(muteSfx);
     }, [muteSfx, onSfxMutedChange]);
 
-    useEffect(() => {
-        if (isGameFinished && resultModalDelayMs > 0) {
-            const id = window.setTimeout(() => setShowResults(true), resultModalDelayMs);
-            return () => window.clearTimeout(id);
-        }
-        setShowResults(isGameFinished);
-    }, [isGameFinished, resultModalDelayMs]);
+    const resultsTimerRef = useRef<number | null>(null);
 
     useEffect(() => {
-        if (!isGameFinished) {
-            setShowResults(false);
+        // Avoid synchronous setState inside effects (lint rule). Always schedule.
+        if (resultsTimerRef.current !== null) {
+            window.clearTimeout(resultsTimerRef.current);
+            resultsTimerRef.current = null;
         }
-    }, [isGameFinished]);
+
+        const nextValue = !!isGameFinished;
+        const delay = nextValue ? Math.max(0, resultModalDelayMs) : 0;
+
+        resultsTimerRef.current = window.setTimeout(() => {
+            setShowResults(nextValue);
+        }, delay);
+
+        return () => {
+            if (resultsTimerRef.current !== null) {
+                window.clearTimeout(resultsTimerRef.current);
+                resultsTimerRef.current = null;
+            }
+        };
+    }, [isGameFinished, resultModalDelayMs]);
 
     return (
         <div
