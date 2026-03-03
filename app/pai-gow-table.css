@@ -411,15 +411,15 @@
     order: 3;
   }
 
-  /* keep card rows on one line with horizontal swipe */
+  /* Cards: fixed layout on mobile (no horizontal scrolling required) */
   .cardsRow{
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px;
-    padding-right: 12px; /* so last card isn't tight to the edge */
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-bottom: 0;
+    padding-right: 0;
     gap: 6px;
+    justify-content: center;
   }
 
   /* Mobile: make chip stacks smaller so they don't cover BONUS text/value */
@@ -868,4 +868,16 @@
 
  
 .cardsRowScroll{ flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding-bottom: 8px; padding-right: 24px; max-width: 100%; -webkit-overflow-scrolling: touch; justify-content:flex-start; }
+
+@media (max-width: 520px){
+  /* match the "no scrolling" rule for the split dealer rows too */
+  .cardsRowScroll{
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-right: 0;
+    padding-bottom: 0;
+    justify-content: center;
+  }
+}
 
