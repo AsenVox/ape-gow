@@ -1,16 +1,16 @@
 import { Game } from "@/lib/games";
 
-export const myGame: Game = {
-    title: "My Game",
-    description: "This is my game",
-    gameAddress: "0x1234567890123456789012345678901234567890",
-    gameBackground: "/my-game/background.png",
-    // animatedBackground: "/my-game/animated-background.mp4",
-    card: "/my-game/card.png", // 1:1 aspect ratio (e.g. 512x512)
-    banner: "/my-game/banner.png", // 2:1 aspect ratio (e.g. 1024x512)
-    advanceToNextStateAsset: "/my-game/advance-button.png",
-    themeColorBackground: "#F54927",
-    song: "/my-game/audio/song.mp3",
+export const paiGow: Game = {
+    title: "Pai Gow (Face Up)",
+    description: "Face Up Pai Gow demo: dealer flips and arranges, player reveals and splits, then hands settle with optional side bets.",
+    gameAddress: "0x0000000000000000000000000000000000000000",
+    gameBackground: "/pai-gow/background.png",
+    // animatedBackground: "/pai-gow/animated-background.mp4",
+    card: "/pai-gow/card.png", // REQUIRED 1:1 aspect ratio
+    banner: "/pai-gow/banner.png", // REQUIRED 2:1 aspect ratio
+    advanceToNextStateAsset: "/pai-gow/advance-button.png",
+    themeColorBackground: "#0B1220",
+    // song: "/pai-gow/audio/song.mp3",
     payouts: {
         0: {
             0: { 0: 2847392, 1: 847291, 2: 492837, 3: 183746, 4: 937284, 5: 628394 },

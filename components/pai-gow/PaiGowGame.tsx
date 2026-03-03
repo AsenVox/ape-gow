@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getPayout, randomBytes, Game } from "@/lib/games";
 import GameWindow from "@/components/shared/GameWindow";
-import MyGameWindow from "./MyGameWindow";
-import MyGameSetupCard from "./MyGameSetupCard";
+import PaiGowGameWindow from "./PaiGowGameWindow";
+import PaiGowSetupCard from "./PaiGowSetupCard";
 import { bytesToHex, Hex } from "viem";
 import { toast } from "sonner";
 // import './my-game.styles.css' use if needed
@@ -18,8 +18,9 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
     // Initializations
     const themeColorBackground = game.themeColorBackground;
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const replayIdString = searchParams.get("id");
+    // NOTE: Avoid `useSearchParams` here to keep Next.js prerender happy.
+    // Rewatch/replay can be wired later via a dedicated client-only wrapper.
+    const replayIdString = null as string | null;
     const walletBalance = 25; // TODO: get wallet balance from wallet
     const [isGameOngoing, setIsGameOngoing] = React.useState<boolean>(false); // used for hiding global balance when game is ongoing
     const [currentView, setCurrentView] = React.useState<0 | 1 | 2>(0); // 0: setup view, 1: ongoing view, 2: game over view
@@ -46,12 +47,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
     );
     // Set current game ID from replay ID string if available
     useEffect(() => {
-        if (replayIdString !== null) {
-            if (replayIdString.length > 2) {
-                setIsLoading(true);
-                setCurrentGameId(BigInt(replayIdString));
-            }
-        }
+        // replayIdString currently disabled (see note above)
     }, [replayIdString]);
 
 
@@ -204,11 +200,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
         setIsGameOngoing(false);
 
         // Reset replay ID if in replay mode
-        if (replayIdString !== null) {
-            const params = new URLSearchParams(searchParams.toString());
-            params.delete("id");
-            router.replace(`?${params.toString()}`, { scroll: false });
-        }
+        // replayIdString currently disabled (see note above)
     };
 
     const handlePlayAgain = async () => {
@@ -261,7 +253,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
                     isGamePaused={false}
                     resultModalDelayMs={1000}
                 >
-                    <MyGameWindow
+                    <PaiGowGameWindow
                         game={game}
                         isSpinning={isSpinning}
                         currentSpinIndex={currentSpinIndex}
@@ -273,7 +265,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
                 </GameWindow>
 
                 {/* Game Setup Card */}
-                <MyGameSetupCard
+                <PaiGowSetupCard
                     game={game}
                     onPlay={async () => await playGame()}
                     onSpin={handleStateAdvance}
