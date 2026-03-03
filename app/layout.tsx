@@ -28,8 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Full-bleed by default; individual pages/components can add their own containers. */}
-        {children}
+        <div className="container mx-auto px-4 lg:px-12 pt-8 pb-6 sm:pt-12 sm:pb-16 md:pt-20 md:pb-32">
+          {children}
+        </div>
       </body>
     </html>
   );
