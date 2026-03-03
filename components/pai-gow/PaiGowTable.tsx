@@ -4,7 +4,7 @@
 //   C:\Users\echom\Desktop\PaiGow\ape-gow\ui\src\App.tsx
 // Goal: keep gameplay identical; only adjust imports/paths for Next.js template.
 
-import { useEffect, useMemo, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 import { hashSeedToU32 } from "@/lib/pai-gow-sim/prng";
 import { dealRound } from "@/lib/pai-gow-sim/deal";
@@ -15,7 +15,6 @@ import { eval5 } from "@/lib/pai-gow-sim/eval5";
 import { eval2 } from "@/lib/pai-gow-sim/eval2";
 
 import { CardFace } from "./CardFace";
-import GameResultsModal from "@/components/shared/GameResultsModal";
 
 // NOTE: We load assets from /public via absolute paths (Next.js safe).
 const acLogo = "/pai-gow/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
@@ -85,7 +84,27 @@ function sortCardsForDisplay(cards: Card[]) {
   });
 }
 
-export default function PaiGowTable() {
+export type PaiGowTableStatus = {
+  isLoading: boolean;
+  isGameFinished: boolean;
+  betAmount: number;
+  payout: number;
+};
+
+export type PaiGowTableHandle = {
+  reset: () => void;
+  playAgain: () => void;
+  rewatch: () => void;
+};
+
+type PaiGowTableProps = {
+  onStatusChange?: (s: PaiGowTableStatus) => void;
+};
+
+const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function PaiGowTable(
+  { onStatusChange },
+  ref,
+) {
   const [seed, setSeed] = useState("demo-seed-1"); // deterministic per hand
 
   // ApeChurch lifecycle: 0 setup → 1 ongoing → 2 game over
@@ -245,23 +264,15 @@ export default function PaiGowTable() {
     highIdx.length === 5 &&
     view.validation.ok;
 
-  // Game-over modal
+  // Game lifecycle (for template GameWindow integration)
   const [isGameFinished, setIsGameFinished] = useState(false);
-  const [resultsOpen, setResultsOpen] = useState(false);
-  const [resultsSeenSeed, setResultsSeenSeed] = useState<string | null>(null);
 
   // Advance lifecycle to "game over" once a valid split is locked in.
   useEffect(() => {
     if (!isRoundComplete) return;
     setCurrentView(2);
     setIsGameFinished(true);
-
-    // Open results modal once per seed (prevents repeat-open during re-renders)
-    if (resultsSeenSeed !== seed) {
-      setResultsOpen(true);
-      setResultsSeenSeed(seed);
-    }
-  }, [isRoundComplete, resultsSeenSeed, seed]);
+  }, [isRoundComplete]);
 
   function resetHands() {
     setLowIdx([]);
@@ -277,8 +288,6 @@ export default function PaiGowTable() {
 
   function handleReset() {
     setIsGameFinished(false);
-    setResultsOpen(false);
-    setResultsSeenSeed(null);
     // Full reset back to setup view (ApeChurch requirement)
     resetHands();
     setIsLoading(false);
@@ -295,8 +304,6 @@ export default function PaiGowTable() {
 
   function handlePlayAgain() {
     setIsGameFinished(false);
-    setResultsOpen(false);
-    setResultsSeenSeed(null);
     // Fresh hand (new deterministic seed), keep user in setup to place/adjust bets
     setSeed(`demo-${Date.now()}`);
     resetHands();
@@ -306,8 +313,6 @@ export default function PaiGowTable() {
 
   function handleRewatch() {
     setIsGameFinished(false);
-    setResultsOpen(false);
-    // keep seen seed so it won't auto-pop during rewatch
     // Replay same seed/outcome without a new bet/tx (ApeChurch requirement)
     resetHands();
     setIsLoading(false);
@@ -317,10 +322,8 @@ export default function PaiGowTable() {
   }
 
   async function playGame() {
-    // ensure we can show modal at end of this round
-    setIsGameFinished(false);
-    setResultsOpen(false);
     // Start a new game with current bet (simulated tx)
+    setIsGameFinished(false);
     if (dealerRevealed) return;
 
     // Face Up Pai Gow: MAIN wager required; side bets optional.
@@ -552,27 +555,30 @@ export default function PaiGowTable() {
 
   const totalBet = main + side + push;
 
+  // Expose lifecycle actions to the template shell (GameWindow modal buttons)
+  useImperativeHandle(
+    ref,
+    () => ({
+      reset: handleReset,
+      playAgain: handlePlayAgain,
+      rewatch: handleRewatch,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  // Report status upward for template integration
+  useEffect(() => {
+    onStatusChange?.({
+      isLoading,
+      isGameFinished,
+      betAmount: totalBet,
+      payout: netPayout,
+    });
+  }, [onStatusChange, isLoading, isGameFinished, totalBet, netPayout]);
+
   return (
     <div className="tableWrap">
-      {resultsOpen && isGameFinished && r ? (
-        <GameResultsModal
-          key={String(view.seedU32)}
-          isOpen={resultsOpen}
-          payout={netPayout}
-          betAmount={totalBet}
-          usdMode={false}
-          apePrice={1}
-          isLoading={isLoading}
-          gameTitle="Pai Gow"
-          onReset={handleReset}
-          onPlayAgain={handlePlayAgain}
-          onRewatch={handleRewatch}
-          showPlayAgainOption={true}
-          showRewatchOption={true}
-          showPNL={true}
-          onClose={() => setResultsOpen(false)}
-        />
-      ) : null}
       <div className="table">
         <div className="rail">
           <div className="brand">
@@ -866,4 +872,6 @@ export default function PaiGowTable() {
       </div>
     </div>
   );
-}
+});
+
+export default PaiGowTable;
