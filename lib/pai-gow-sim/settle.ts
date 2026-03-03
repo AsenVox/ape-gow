@@ -90,7 +90,11 @@ export function settleRound(args: {
   };
 
   const dealerBest5 = best5(args.deal.house);
-  const dealerAceHighPaiGow = !!cfg.faceUpAceHighPush && dealerBest5.category === 0 && (dealerBest5.ranks?.[0] ?? 0) === 14;
+  const dealerAceHighPaiGow =
+    !!cfg.faceUpAceHighPush &&
+    dealerBest5 != null &&
+    dealerBest5.category === 0 &&
+    (dealerBest5.ranks?.[0] ?? 0) === 14;
 
   const outcome = dealerAceHighPaiGow ? 'PUSH' : compareHands(args.playerSplit, houseSplit, cfg.tiesGoToHouse);
 
@@ -127,7 +131,7 @@ export function settleRound(args: {
     if (dealerAceHighPaiGow) {
       const dealerHasJoker = args.deal.house.some((c) => c.rank === 'X');
       const playerBest5 = best5(args.deal.player);
-      const playerAceHigh = playerBest5.category === 0 && (playerBest5.ranks?.[0] ?? 0) === 14;
+      const playerAceHigh = playerBest5 != null && playerBest5.category === 0 && (playerBest5.ranks?.[0] ?? 0) === 14;
 
       if (playerAceHigh) {
         pushAceHighHit = { name: 'Player + Dealer Ace High', multiplier: 40 };
