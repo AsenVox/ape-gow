@@ -90,6 +90,14 @@ export type PaiGowTableStatus = {
   isGameFinished: boolean;
   betAmount: number;
   payout: number;
+  breakdown?: {
+    totalWager: number;
+    main: { wager: number; payout: number };
+    bonus: { wager: number; payout: number; hit?: { name: string; multiplier: number } };
+    push: { wager: number; payout: number; hit?: { name: string; multiplier: number } };
+    outcome?: string;
+    dealerAceHighPaiGow?: boolean;
+  };
 };
 
 export type PaiGowTableHandle = {
@@ -577,8 +585,18 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
       isGameFinished,
       betAmount: totalBet,
       payout: netPayout,
+      breakdown: r
+        ? {
+            totalWager: totalBet,
+            main: { wager: main, payout: mainPayout },
+            bonus: { wager: side, payout: bonusPayout, hit: r.sideHit },
+            push: { wager: push, payout: pushPayout, hit: r.pushAceHighHit },
+            outcome: r.outcome,
+            dealerAceHighPaiGow: r.dealerAceHighPaiGow,
+          }
+        : undefined,
     });
-  }, [onStatusChange, isLoading, isGameFinished, totalBet, netPayout]);
+  }, [onStatusChange, isLoading, isGameFinished, totalBet, netPayout, r, main, side, push, mainPayout, bonusPayout, pushPayout]);
 
   const showBreakdown = isGameFinished && !!r;
 

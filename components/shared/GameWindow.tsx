@@ -16,6 +16,8 @@ type GameWindowProps = {
     customHeightMobile?: string;
     children: React.ReactNode;
 
+    resultsExtra?: React.ReactNode;
+
     betAmount: number | null;
     payout: number | null;
     inReplayMode: boolean;
@@ -44,6 +46,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
     isGameFinished,
     customHeightMobile,
     children,
+    resultsExtra,
 
     betAmount,
     payout,
@@ -180,6 +183,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                         showPlayAgainOption={!inReplayMode && isUserOriginalPlayer}
                         showRewatchOption={inReplayMode || isUserOriginalPlayer}
                         showPNL={showPNL}
+                        extraContent={resultsExtra}
                     />
                 )}
 

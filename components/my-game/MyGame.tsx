@@ -41,6 +41,39 @@ export default function MyGameComponent() {
       // Prevent template fallback audio 404 during dev.
       disableBuiltInSong={true}
       resultModalDelayMs={250}
+      resultsExtra={
+        status.breakdown ? (
+          <div style={{
+            display: "grid",
+            gap: 6,
+            padding: "10px 12px",
+            borderRadius: 14,
+            border: "1px solid rgba(255,255,255,0.22)",
+            background: "rgba(0,0,0,0.18)",
+            color: "rgba(255,255,255,0.92)",
+            textShadow: "0 1px 0 rgba(0,0,0,0.35)",
+            fontWeight: 800,
+            letterSpacing: 0.2,
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", opacity: 0.9 }}>
+              <span>Total wager</span>
+              <span>{status.breakdown.totalWager}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Main</span>
+              <span>{status.breakdown.main.wager} → {status.breakdown.main.payout}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Bonus</span>
+              <span>{status.breakdown.bonus.wager} → {status.breakdown.bonus.payout}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Push</span>
+              <span>{status.breakdown.push.wager} → {status.breakdown.push.payout}</span>
+            </div>
+          </div>
+        ) : null
+      }
     >
       <PaiGowTable ref={tableRef} onStatusChange={setStatus} hideHeader={false} />
     </GameWindow>

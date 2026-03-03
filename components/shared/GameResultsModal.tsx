@@ -8,6 +8,7 @@ import { X, Maximize2, Minimize2 } from "lucide-react";
 
 type GameResultsModalProps = {
     isOpen: boolean;
+    extraContent?: React.ReactNode;
     onClose?: () => void;
     payout: number;
     betAmount: number;
@@ -45,6 +46,7 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
     resetButtonText = "Change Bet",
     playAgainButtonText = "Play Again",
     rewatchButtonText = "Rewatch",
+    extraContent,
 }) => {
     const [minimizeResultsModal, setMinimizeResultsModal] = useState(false);
     const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
@@ -333,6 +335,12 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
                                                 </p>
                                             </motion.div>
                                         )}
+
+                                        {extraContent ? (
+                                            <div className="w-full mt-1">
+                                                {extraContent}
+                                            </div>
+                                        ) : null}
 
                                         {/* Buttons */}
                                         <motion.div
