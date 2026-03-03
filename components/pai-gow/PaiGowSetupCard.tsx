@@ -40,7 +40,7 @@ interface MyGameSetupCardProps {
     jackpotMultiplier: number;
     inReplayMode: boolean;
 
-    account?: unknown;
+    account?: { address?: string } | null;
     walletBalance: number;
     playerAddress?: string;
     isGamePaused?: boolean;
@@ -304,7 +304,7 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
         if (!playerAddress) {
             return false;
         }
-        if (!account) {
+        if (!account?.address) {
             return false;
         }
         if (inReplayMode) {

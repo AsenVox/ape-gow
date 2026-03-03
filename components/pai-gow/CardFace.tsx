@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Suit } from './Suit'
 import { suitColor, suitSymbol } from './suitUtils'
 
-import backLogo from '/pai-gow/back-logo.png'
+const backLogo = '/pai-gow/back-logo.png'
 const jokerCard = '/pai-gow/cards/JOKER.png'
 
 // Next.js note: Vite's `import.meta.glob` isn't available.
