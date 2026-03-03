@@ -42,7 +42,7 @@ export default function MyGameComponent() {
       disableBuiltInSong={true}
       resultModalDelayMs={250}
     >
-      <PaiGowTable ref={tableRef} onStatusChange={setStatus} />
+      <PaiGowTable ref={tableRef} onStatusChange={setStatus} hideHeader={true} />
     </GameWindow>
   );
 }

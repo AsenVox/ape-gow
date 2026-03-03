@@ -99,10 +99,12 @@ export type PaiGowTableHandle = {
 
 type PaiGowTableProps = {
   onStatusChange?: (s: PaiGowTableStatus) => void;
+  /** When the table is rendered inside the template GameWindow, hide the extra top rail/header. */
+  hideHeader?: boolean;
 };
 
 const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function PaiGowTable(
-  { onStatusChange },
+  { onStatusChange, hideHeader = false },
   ref,
 ) {
   const [seed, setSeed] = useState("demo-seed-1"); // deterministic per hand
@@ -579,8 +581,9 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
 
   return (
     <div className="tableWrap">
-      <div className="table">
-        <div className="rail">
+      <div className={hideHeader ? "table tableNoRail" : "table"}>
+        {!hideHeader ? (
+          <div className="rail">
           <div className="brand">
             <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
             <div>
@@ -596,7 +599,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               {isLoading ? "Confirming…" : dealerRevealed ? (dealerArranged ? "Dealer arranged" : "Flipping…") : "Play"}
             </button>
           </div>
-        </div>
+          </div>
+        ) : null}
 
         <div className="felt">
           <div className="zone">
