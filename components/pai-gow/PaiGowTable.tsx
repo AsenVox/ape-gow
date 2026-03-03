@@ -585,11 +585,32 @@ export default function PaiGowTable() {
               </div>
             </div>
 
-            <div className="cardsRow cardsRowScroll">
-              {view.house7.map((c, i) => (
-                <CardFace key={`house-${i}`} card={c} faceDown={!dealerFlipped[i]} />
-              ))}
-            </div>
+            {!dealerArranged ? (
+              <div className="cardsRow cardsRowScroll">
+                {view.house7.map((c, i) => (
+                  <CardFace key={`house-${i}`} card={c} faceDown={!dealerFlipped[i]} />
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: "grid", gap: 10 }}>
+                <div>
+                  <div style={{ fontWeight: 900, opacity: 0.75, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>HIGH (5)</div>
+                  <div className="cardsRow cardsRowScroll">
+                    {view.houseSplit.high.map((c, i) => (
+                      <CardFace key={`house-high-${i}`} card={c} faceDown={false} tone="high" />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 900, opacity: 0.75, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>LOW (2)</div>
+                  <div className="cardsRow cardsRowScroll">
+                    {view.houseSplit.low.map((c, i) => (
+                      <CardFace key={`house-low-${i}`} card={c} faceDown={false} tone="low" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="zone">
