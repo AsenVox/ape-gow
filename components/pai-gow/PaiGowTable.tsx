@@ -579,8 +579,28 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     });
   }, [onStatusChange, isLoading, isGameFinished, totalBet, netPayout]);
 
+  const showBreakdown = isGameFinished && !!r;
+
   return (
     <div className="tableWrap">
+      {showBreakdown ? (
+        <div className="pgBreakdownOverlay" aria-hidden>
+          <div className="pgBreakdownCard">
+            <div className="pgBreakdownTitle">BREAKDOWN</div>
+            <div className="pgBreakdownGrid">
+              <div className="pgLine"><span>Main bet</span><span>{main}</span><span className={mainPayout > 0 ? "pgPos" : mainPayout < 0 ? "pgNeg" : ""}>{mainPayout}</span></div>
+              <div className="pgLine"><span>Bonus bet</span><span>{side}</span><span className={bonusPayout > 0 ? "pgPos" : bonusPayout < 0 ? "pgNeg" : ""}>{bonusPayout}</span></div>
+              <div className="pgLine"><span>Push bet</span><span>{push}</span><span className={pushPayout > 0 ? "pgPos" : pushPayout < 0 ? "pgNeg" : ""}>{pushPayout}</span></div>
+              <div className="pgLine pgNet"><span>Net</span><span>{totalBet}</span><span className={netPayout > 0 ? "pgPos" : netPayout < 0 ? "pgNeg" : ""}>{netPayout}</span></div>
+            </div>
+            <div className="pgBreakdownFine">
+              Outcome: {r?.outcome}{r?.dealerAceHighPaiGow ? " (Dealer Ace-High Push)" : ""}
+              {r?.sideHit ? ` • Bonus: ${r.sideHit.name} x${r.sideHit.multiplier}` : ""}
+              {r?.pushAceHighHit ? ` • Push: ${r.pushAceHighHit.name} x${r.pushAceHighHit.multiplier}` : ""}
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className={hideHeader ? "table tableNoRail" : "table"}>
         {!hideHeader ? (
           <div className="rail">
