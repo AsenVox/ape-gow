@@ -313,13 +313,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     setPushChips([]);
   }
 
-  function handleChangeBet() {
-    setIsGameFinished(false);
-    // Back to setup view, but keep current bet so the user can tweak.
-    resetHands();
-    setIsLoading(false);
-    setCurrentView(0);
-  }
+// (Change bet removed — players can adjust bets directly before Play, and after results via modal)
 
   function handlePlayAgain() {
     setIsGameFinished(false);
@@ -467,16 +461,9 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     }
   }, [canSplit, view.player7]);
 
-  // One-click flow: once the dealer is arranged, reveal player cards and auto-split.
-  useEffect(() => {
-    if (!dealerArranged) return;
-    // Let the arrange animation settle, then reveal player hand.
-    const t = window.setTimeout(() => flipAllPlayer(), 50);
-    return () => window.clearTimeout(t);
-  }, [dealerArranged, flipAllPlayer]);
-
-  // NOTE: We intentionally do NOT auto-split.
-  // Players can manually split; an Auto-split button is provided near the player cards for convenience.
+  // NOTE: We intentionally do NOT auto-reveal or auto-split.
+  // Players can manually flip cards (or use Flip all) and manually split.
+  // An Auto-split button is provided near the player cards for convenience.
 
 
   const chipValues = [1, 5, 10, 25, 100];
@@ -649,14 +636,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                     : "Play"}
             </button>
 
-            {/* Escape hatch: tweak bet (keeps current wager amount). */}
-            <button
-              className="btn"
-              onClick={handleChangeBet}
-              disabled={isLoading || (!isGameFinished && dealerRevealed)}
-            >
-              Change bet
-            </button>
+            {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
+
           </div>
           </div>
         ) : null}
