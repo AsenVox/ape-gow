@@ -112,7 +112,7 @@
   box-shadow: 0 18px 60px rgba(0,0,0,0.55);
 
   /* Header art: fill the pill */
-  background-image: url('/pai-gow/header-bg.jpg');
+  background-image: url('/my-game/header-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   /* Shift the art left so the right-side "PAI GOW" text isn't cropped */
@@ -184,11 +184,11 @@
 }
 
 .dealerZone::before{
-  background-image: url('/pai-gow/dealer-zone-bg.jpg');
+  background-image: url('/my-game/dealer-zone-bg.jpg');
 }
 
 .playerZone::before{
-  background-image: url('/pai-gow/player-zone-bg.jpg');
+  background-image: url('/my-game/player-zone-bg.jpg');
 }
 
 /* Keep zone content above overlay */

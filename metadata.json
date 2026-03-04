@@ -16,11 +16,11 @@
     "example",
     "game"
   ],
-  "thumbnail": "/pai-gow/card.png",
-  "banner": "/pai-gow/banner.png",
-  "mainComponent": "PaiGowGame.tsx",
-  "windowComponent": "PaiGowGameWindow.tsx",
-  "setupComponent": "PaiGowSetupCard.tsx",
-  "configFile": "paiGowConfig.ts",
+  "thumbnail": "/my-game/card.png",
+  "banner": "/my-game/banner.png",
+  "mainComponent": "MyGame.tsx",
+  "windowComponent": "MyGameWindow.tsx",
+  "setupComponent": "MyGameSetupCard.tsx",
+  "configFile": "gameConfig.ts", 
   "version": "1.0.0"
 }
