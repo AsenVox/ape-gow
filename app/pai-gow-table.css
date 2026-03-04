@@ -428,15 +428,7 @@
     padding-bottom: 0;
   }
 
-  .controls{
-    width: auto;
-    justify-content: flex-end;
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    top: auto;
-    transform: none;
-  }
+  /* controls positioned above via the earlier .controls rule in this media block */
 
   .zone{
     padding: 12px;
