@@ -95,29 +95,18 @@
   position: relative;
   overflow: hidden;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   padding: 18px 16px;
-  min-height: 128px; /* room for banner + buttons */
+  min-height: 170px; /* give the banner breathing room */
   border-bottom: 1px solid rgba(215,225,230,0.10);
-  /* More transparent so the full background image reads behind the header */
-  background: rgba(0,0,0,0.14);
-  backdrop-filter: blur(2px);
+  /* Keep it clean; let the GameWindow background do the work */
+  background: rgba(0,0,0,0.06);
+  backdrop-filter: blur(1.5px);
 }
 
-/* subtle flair image behind the rail contents */
-.rail::before{
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/pai-gow/rail-flair.jpg');
-  background-size: cover;
-  background-position: 50% 45%;
-  opacity: 0.30;
-  filter: saturate(1.05) contrast(1.05) blur(0.5px);
-  transform: scale(1.06);
-  pointer-events: none;
-}
+/* No extra flair image behind the rail; keep the banner clean. */
+.rail::before{ content: none; }
 
 .rail > *{ position: relative; z-index: 1; }
 
@@ -363,11 +352,12 @@
   justify-content:flex-end;
   flex-wrap:wrap;
 
-  /* Put controls into the empty banner area on the top-right (screenshot callout) */
+  /* Pin controls in the top-right banner area, but keep them out of the title/sub text */
   position: absolute;
   right: 16px;
-  top: 62%;
-  transform: translateY(-50%);
+  bottom: 16px;
+  top: auto;
+  transform: none;
 }
 
 /* Jackpot dot placement (desktop defaults: hide; mobile shows near chips) */
@@ -407,13 +397,14 @@
     align-items: flex-start;
     gap: 10px;
     flex-wrap: wrap;
-    min-height: 148px;
+    min-height: 190px;
   }
 
   .brand{
     flex: 1 1 240px;
     min-width: 240px;
-    padding-right: 160px; /* leave space for top-right controls */
+    padding-right: 0;
+    padding-bottom: 54px; /* leave room for bottom-right controls */
   }
 
   .controls{
@@ -421,8 +412,9 @@
     justify-content: flex-end;
     position: absolute;
     right: 12px;
-    top: 62%;
-    transform: translateY(-50%);
+    bottom: 12px;
+    top: auto;
+    transform: none;
   }
 
   .zone{
