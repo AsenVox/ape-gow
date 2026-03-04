@@ -108,7 +108,7 @@
   background-image: url('/pai-gow/rail-flair.jpg');
   background-size: cover;
   background-position: 50% 45%;
-  opacity: 0.14;
+  opacity: 0.22;
   filter: saturate(1.05) contrast(1.05) blur(0.5px);
   transform: scale(1.06);
   pointer-events: none;
