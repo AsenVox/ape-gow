@@ -137,7 +137,7 @@
 
 /* Shift the game title + flow text to the right so it doesn't overlap the avatar */
 .brand > div{
-  margin-left: 140px;
+  margin-left: 120px;
 }
 
 .title{
@@ -425,7 +425,7 @@
   }
 
   .brand img{ margin-top: -6px; }
-  .brand > div{ margin-left: 110px; }
+  .brand > div{ margin-left: 96px; }
 
   .controls{
     position: absolute;
