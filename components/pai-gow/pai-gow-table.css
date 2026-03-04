@@ -37,10 +37,11 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding: 14px 16px;
+  padding: 18px 16px;
+  min-height: 128px; /* make room so the background banner is fully readable behind */
   border-bottom: 1px solid rgba(215,225,230,0.10);
   /* More transparent so the full background image reads behind the header */
-  background: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.14);
   backdrop-filter: blur(2px);
 }
 
@@ -282,10 +283,10 @@
   justify-content:flex-end;
   flex-wrap:wrap;
 
-  /* Put controls into the empty top-right area (like the screenshot callout) */
+  /* Put controls into the empty banner area on the top-right (like the screenshot callout) */
   position: absolute;
   right: 16px;
-  top: 50%;
+  top: 62%;
   transform: translateY(-50%);
 }
 
@@ -327,6 +328,7 @@
     align-items: flex-start;
     gap: 10px;
     flex-wrap: wrap;
+    min-height: 148px;
   }
 
   .brand{
@@ -340,8 +342,8 @@
     justify-content: flex-end;
     position: absolute;
     right: 12px;
-    top: 12px;
-    transform: none;
+    top: 62%;
+    transform: translateY(-50%);
   }
 
   .zone{

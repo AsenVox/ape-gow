@@ -204,7 +204,11 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     alt="Game Background"
                     width={719}
                     height={719}
-                    className="absolute inset-0 w-full h-full object-cover rounded-[8px] opacity-75"
+                    className={cn(
+                        "absolute inset-0 w-full h-full rounded-[8px] opacity-75",
+                        // Pai Gow background is a composed banner; use contain so it doesn't get cropped.
+                        game.gameBackground?.includes("/pai-gow/") ? "object-contain bg-black" : "object-cover",
+                    )}
                     style={{
                         minHeight: customHeightMobile ? customHeightMobile : "100%",
                     }}
