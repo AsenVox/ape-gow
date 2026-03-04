@@ -475,12 +475,9 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     return () => window.clearTimeout(t);
   }, [dealerArranged, flipAllPlayer]);
 
-  useEffect(() => {
-    if (!canSplit) return;
-    // Give React a beat to apply the "all revealed" state before mapping indices.
-    const t = window.setTimeout(() => autoSplitHouseWay(), 0);
-    return () => window.clearTimeout(t);
-  }, [canSplit, autoSplitHouseWay]);
+  // NOTE: We intentionally do NOT auto-split.
+  // Players can manually split; an Auto-split button is provided near the player cards for convenience.
+
 
   const chipValues = [1, 5, 10, 25, 100];
 
