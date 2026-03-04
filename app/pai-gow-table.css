@@ -115,7 +115,8 @@
   background-image: url('/pai-gow/header-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: 20% 50%;
+  /* Shift the art left so the right-side "PAI GOW" text isn't cropped */
+  background-position: 65% 50%;
   background-color: rgba(0,0,0,0.10);
 }
 
@@ -465,7 +466,7 @@
 
   .rail{
     min-height: 240px;
-    background-position: 10px 50%;
+    background-position: 65% 50%;
   }
 
   .brand{
