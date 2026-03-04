@@ -15,7 +15,7 @@ type GameResultsModalProps = {
     usdMode: boolean;
     apePrice: number;
     isLoading: boolean;
-    gameTitle?: string
+    gameTitle?: string;
 
     onReset: () => void;
     onPlayAgain: () => void;
@@ -48,6 +48,9 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
     rewatchButtonText = "Rewatch",
     extraContent,
 }) => {
+    void betAmount;
+    void gameTitle;
+
     const [minimizeResultsModal, setMinimizeResultsModal] = useState(false);
     const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
@@ -100,7 +103,6 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
     }, [isOpen]);
 
     const isWin = payout > 0;
-    const isProfitableWin = payout > betAmount && payout > 1;
     const displayPayout = usdMode
         ? `$${(payout * apePrice).toLocaleString([], {
             minimumFractionDigits: 2,

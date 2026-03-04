@@ -8,7 +8,7 @@ const jokerCard = '/pai-gow/assets/cards/JOKER.png'
 
 // Next.js note: Vite's `import.meta.glob` isn't available.
 // We load card faces from `public/pai-gow/cards/*.png` by direct path.
-const cardPngByName: Record<string, string> = {}
+// const cardPngByName: Record<string, string> = {}
 
 type Card = { rank: string; suit: string }
 
@@ -141,6 +141,7 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
               This removes any baked-in rectangle/background from the PNG and guarantees a clean cutout.
             */}
             {/* Use the Ape Church logo as a clean centered mark (no noisy card-back texture). */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={backLogo}
               alt="Ape Church"
@@ -199,39 +200,45 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
               {(() => {
                 if (isJoker) {
                   return (
-                    <img
-                      src={jokerCard}
-                      alt="Joker"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: '50% 50%',
-                        // Joker has text baked into the PNG; keep it big but safe inside rounded corners.
-                        padding: 6,
-                        margin: 'auto',
-                        boxSizing: 'border-box',
-                      }}
-                    />
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={jokerCard}
+                        alt="Joker"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                          objectPosition: '50% 50%',
+                          // Joker has text baked into the PNG; keep it big but safe inside rounded corners.
+                          padding: 6,
+                          margin: 'auto',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </>
                   )
                 }
 
                 if (faceSrc) {
                   return (
-                    <img
-                      src={faceSrc}
-                      alt={`${card.rank}${card.suit}`}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: '50% 50%',
-                        // keep within rounded corners; never crop edges
-                        padding: 4,
-                        margin: 'auto',
-                        boxSizing: 'border-box',
-                      }}
-                    />
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={faceSrc}
+                        alt={`${card.rank}${card.suit}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                          objectPosition: '50% 50%',
+                          // keep within rounded corners; never crop edges
+                          padding: 4,
+                          margin: 'auto',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </>
                   )
                 }
 

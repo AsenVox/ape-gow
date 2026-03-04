@@ -17,5 +17,6 @@ interface PaiGowGameWindowProps {
 // For Pai Gow, the entire experience lives in the table UI.
 // We keep the template prop signature for compatibility.
 export default function PaiGowGameWindow(_props: PaiGowGameWindowProps) {
+  void _props;
   return <PaiGowTable />;
 }

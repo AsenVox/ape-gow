@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Howl } from "howler";
-import { Volume2, VolumeX, Music, AudioLines } from "lucide-react";
+import { Volume2, VolumeX, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameResultsModal from "./GameResultsModal";
 import { Game } from "@/lib/games";
@@ -79,14 +79,14 @@ const GameWindow: React.FC<GameWindowProps> = ({
             src: [game.song || fallbackSong],
             loop: true,
             volume: 0.5,
-            mute: muteMusic,
+            // NOTE: mute is controlled by the dedicated effect below.
+            mute: false,
         });
 
         audioRef.current = sound;
 
-        if (!muteMusic) {
-            sound.play();
-        }
+        // Start playback immediately; if music is muted, it will be muted by the effect below.
+        sound.play();
 
         return () => {
             sound.unload();

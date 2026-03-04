@@ -81,6 +81,9 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
     maxBet,
     minBet,
 }) => {
+    void profile;
+    void minBet;
+
     const themeColorBackground = game.themeColorBackground;
     // const themeColorText = game.themeColorText;
 

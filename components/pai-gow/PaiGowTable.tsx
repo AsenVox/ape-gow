@@ -119,7 +119,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const [seed, setSeed] = useState("demo-seed-1"); // deterministic per hand
 
   // ApeChurch lifecycle: 0 setup → 1 ongoing → 2 game over
-  const [_currentView, setCurrentView] = useState<0 | 1 | 2>(0);
+  const [, setCurrentView] = useState<0 | 1 | 2>(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const [main, setMain] = useState(0);
@@ -604,6 +604,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
         {!hideHeader ? (
           <div className="rail">
           <div className="brand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
             <div>
               <div className="title">Pai Gow</div>
