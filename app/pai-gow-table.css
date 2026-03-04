@@ -214,7 +214,26 @@
   justify-content:center;
   gap: 14px;
   padding: 12px 10px 6px;
+
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
 }
+
+.betLane::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/pai-gow/bet-lane-bg.jpg');
+  background-size: cover;
+  background-position: 50% 55%;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+.betLane > *{ position: relative; z-index: 1; }
 
 .betSpot{
   width: 150px;
