@@ -154,9 +154,34 @@
 
 .zone{
   padding: 16px;
-  /* Solid black behind playfield */
   background: #000;
+  position: relative;
+  overflow: hidden;
 }
+
+/* Subtle zone background art overlays */
+.dealerZone::before,
+.playerZone::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: 50% 50%;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dealerZone::before{
+  background-image: url('/pai-gow/dealer-zone-bg.jpg');
+}
+
+.playerZone::before{
+  background-image: url('/pai-gow/player-zone-bg.jpg');
+}
+
+/* Keep zone content above overlay */
+.zone > *{ position: relative; z-index: 1; }
 
 .zone + .zone{
   border-top: 1px solid rgba(215,225,230,0.08);

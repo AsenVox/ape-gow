@@ -643,7 +643,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
         ) : null}
 
         <div className="felt">
-          <div className="zone">
+          <div className="zone dealerZone">
             <div className="zoneHeader">
               <div className="zoneLabel">DEALER</div>
               <div style={{ fontSize: 12, opacity: 0.72 }}>
@@ -683,7 +683,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
             )}
           </div>
 
-          <div className="zone">
+          <div className="zone playerZone">
             <div className="zoneHeader">
               <div className="zoneLabel">PLAYER</div>
               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
