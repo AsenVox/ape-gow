@@ -708,8 +708,13 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           <div className="zone">
             <div className="zoneHeader">
               <div className="zoneLabel">PLAYER</div>
-              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                <button className="btn" onClick={flipAllPlayer} disabled={!dealerArranged}>Flip all</button>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <button className="btn" onClick={autoSplitHouseWay} disabled={!canSplit}>
+                  Auto-split
+                </button>
+                <button className="btn" onClick={flipAllPlayer} disabled={!dealerArranged}>
+                  Flip all
+                </button>
                 <button
                   className="btn"
                   onClick={() => setPlayerSort((s) => (s === "asc" ? "desc" : s === "desc" ? "none" : "asc"))}
