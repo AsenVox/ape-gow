@@ -1,8 +1,5 @@
 :root{
-  --felt: radial-gradient(1200px 700px at 18% 0%, rgba(140,255,0,0.10), transparent 60%),
-          radial-gradient(900px 600px at 82% 20%, rgba(105,174,251,0.10), transparent 55%),
-          radial-gradient(900px 700px at 50% 120%, rgba(239,185,11,0.08), transparent 55%),
-          #050505;
+  --felt: #000;
 
   /* responsive tokens */
   --cardW: 72px;
@@ -157,8 +154,8 @@
 
 .zone{
   padding: 16px;
-  /* Prevent the banner image from showing through the playfield zones */
-  background: rgba(0,0,0,0.28);
+  /* Solid black behind playfield */
+  background: #000;
 }
 
 .zone + .zone{
