@@ -874,7 +874,7 @@
   width: 54px;
   height: 74px;
   pointer-events: none;
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.55));
+  /* Avoid filter-based stacking contexts that can overlay popovers on iOS. */
 }
 
 .stackChip{
@@ -1002,7 +1002,7 @@
   box-shadow:
     0 24px 70px rgba(0,0,0,0.78),
     0 0 0 1px rgba(0,0,0,0.55);
-  z-index: 10000;
+  z-index: 999999; /* stay above chip stacks in iOS browsers */
   pointer-events: auto;
 }
 
