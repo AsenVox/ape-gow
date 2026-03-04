@@ -231,22 +231,22 @@
   overflow: visible;
 }
 
-/* Put the art behind the actual bet spots (where chips live), not the whole lane. */
-.betSpot::before{
+/* Bet art: apply ONLY to the MAIN bet spot so it reads intentional (not repetitive). */
+.betSpotMain::before{
   content: '';
   position: absolute;
-  inset: -12px; /* extend behind chip stacks a bit */
+  inset: -10px; /* extend behind chip stacks a bit */
   border-radius: 999px;
   background-image: url('/pai-gow/bet-lane-bg.jpg');
   background-size: cover;
   background-position: center;
-  opacity: 0.18;
+  opacity: 0.14;
   filter: saturate(1.05) contrast(1.08) blur(0.6px);
   pointer-events: none;
   z-index: 0;
 }
 
-.betSpot > *{ position: relative; z-index: 1; }
+.betSpotMain > *{ position: relative; z-index: 1; }
 
 .betSpot .chipStack{
   /* keep chips behind labels so BONUS + value stay readable */
