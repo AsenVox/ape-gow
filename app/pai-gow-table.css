@@ -367,7 +367,7 @@
   /* Put controls in the empty right side of the header art (circled) */
   position: absolute;
   right: 26px;
-  top: 72px;
+  top: 80px;
 }
 
 /* Jackpot dot placement (desktop defaults: hide; mobile shows near chips) */
@@ -417,7 +417,7 @@
   .controls{
     position: absolute;
     right: 16px;
-    top: 68px;
+    top: 76px;
     justify-content: flex-end;
   }
 
