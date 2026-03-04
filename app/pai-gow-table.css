@@ -88,6 +88,11 @@
   overflow: hidden;
 }
 
+/* When the header rail is outlined, remove the extra inner line that would double-border it. */
+.rail + .felt{
+  margin-top: 12px;
+}
+
 .rail{
   position: relative;
   overflow: hidden;
@@ -99,7 +104,12 @@
   align-items: start;
   padding: 18px 16px;
   min-height: 220px; /* enough height to show the full header art */
-  border-bottom: 1px solid rgba(215,225,230,0.10);
+
+  /* match section "pill" outline */
+  margin: 14px 14px 0;
+  border-radius: 22px;
+  border: 1px solid rgba(215,225,230,0.12);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
 
   /* Header art (requested) */
   background-image: url('/pai-gow/header-bg.jpg');
