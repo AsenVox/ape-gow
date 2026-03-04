@@ -988,10 +988,10 @@
 
 .infoPopover{
   display: none;
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
 
   width: min(380px, calc(100vw - 18px));
   max-height: min(70vh, 520px);
@@ -1015,14 +1015,21 @@
   pointer-events: auto;
 }
 
-.infoWrap:hover .infoPopover,
-.infoWrap:focus-within .infoPopover{
-  display: block;
+.infoPopoverOpen{ display: block; }
+
+.paytableOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.35);
+  pointer-events: auto;
 }
 
 /* Mobile: still centered, but slightly higher to avoid browser chrome */
 @media (max-width: 520px){
-  .infoPopover{ top: 46%; }
+  .infoPopover{ top: auto; }
 }
  
 /* Mobile fit tweaks */

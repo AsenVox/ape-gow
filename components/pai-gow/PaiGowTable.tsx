@@ -5,6 +5,7 @@
 // Goal: keep gameplay identical; only adjust imports/paths for Next.js template.
 
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { hashSeedToU32 } from "@/lib/pai-gow-sim/prng";
 import type { Card as SimCard, SevenCardHand, PlayerSplit as SimPlayerSplit, FiveCardHand, TwoCardHand } from "@/lib/pai-gow-sim/types";
@@ -133,6 +134,20 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
 
   // chip UI (table-like). Units are 1/5/10/25/100.
   const [activeChip, setActiveChip] = useState(5);
+
+  // Paytable popover: render via portal to <body> so it's always above chips/stacking contexts (iOS).
+  const [paytableOpen, setPaytableOpen] = useState(false);
+  const [canPortal, setCanPortal] = useState(false);
+  useEffect(() => setCanPortal(true), []);
+
+  useEffect(() => {
+    if (!paytableOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPaytableOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [paytableOpen]);
 
   // indices into the 7-card player hand
   const [lowIdx, setLowIdx] = useState<number[]>([]);
@@ -768,30 +783,60 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                 <span style={{ opacity: 0.72 }}>Chips are units (1/5/10/25/100).</span>
 
                 <span className="infoWrap" style={{ opacity: 1 }}>
-                  <button type="button" className="infoIcon" aria-label="Paytable info" title="Paytable">
+                  <button
+                    type="button"
+                    className="infoIcon"
+                    aria-label="Paytable info"
+                    aria-expanded={paytableOpen}
+                    title="Paytable"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setPaytableOpen((v) => !v);
+                    }}
+                  >
                     i
                   </button>
-                  <div className="infoPopover" role="dialog" aria-label="Paytable">
-                    <div style={{ fontWeight: 950, letterSpacing: 1.6, opacity: 0.9 }}>Paytable</div>
-                    <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.92 }}>
-                      <div style={{ fontWeight: 900, opacity: 0.95 }}>BONUS (7-card)</div>
-                      <div>7-card Straight Flush (no Joker): <strong>5000x</strong></div>
-                      <div>Royal Flush + Royal Match: <strong>2000x</strong></div>
-                      <div>7-card Straight Flush (with Joker): <strong>1000x</strong></div>
-                      <div>Five Aces: <strong>400x</strong></div>
-                      <div>Royal Flush: <strong>150x</strong></div>
-                      <div>Straight Flush: <strong>50x</strong></div>
-                      <div>Four of a Kind: <strong>25x</strong></div>
-                      <div>Full House: <strong>5x</strong></div>
-                      <div>Flush: <strong>4x</strong></div>
-                      <div>Three of a Kind: <strong>3x</strong></div>
-                      <div>Straight: <strong>2x</strong></div>
 
-                      <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.95 }}>PUSH (Ace High)</div>
-                      <div>If dealer best 5-card hand is Ace-high, MAIN pushes.</div>
-                      <div>PUSH side bet pays: Dealer Ace High <strong>5x</strong>, w/ Joker <strong>15x</strong>, both Ace-high <strong>40x</strong>.</div>
-                    </div>
-                  </div>
+                  {canPortal && paytableOpen
+                    ? createPortal(
+                        <div
+                          className="paytableOverlay"
+                          role="presentation"
+                          onClick={() => setPaytableOpen(false)}
+                        >
+                          <div
+                            className="infoPopover infoPopoverOpen"
+                            role="dialog"
+                            aria-label="Paytable"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div style={{ fontWeight: 950, letterSpacing: 1.6, opacity: 0.9 }}>Paytable</div>
+                            <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.92 }}>
+                              <div style={{ fontWeight: 900, opacity: 0.95 }}>BONUS (7-card)</div>
+                              <div>7-card Straight Flush (no Joker): <strong>5000x</strong></div>
+                              <div>Royal Flush + Royal Match: <strong>2000x</strong></div>
+                              <div>7-card Straight Flush (with Joker): <strong>1000x</strong></div>
+                              <div>Five Aces: <strong>400x</strong></div>
+                              <div>Royal Flush: <strong>150x</strong></div>
+                              <div>Straight Flush: <strong>50x</strong></div>
+                              <div>Four of a Kind: <strong>25x</strong></div>
+                              <div>Full House: <strong>5x</strong></div>
+                              <div>Flush: <strong>4x</strong></div>
+                              <div>Three of a Kind: <strong>3x</strong></div>
+                              <div>Straight: <strong>2x</strong></div>
+
+                              <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.95 }}>PUSH (Ace High)</div>
+                              <div>If dealer best 5-card hand is Ace-high, MAIN pushes.</div>
+                              <div>
+                                PUSH side bet pays: Dealer Ace High <strong>5x</strong>, w/ Joker <strong>15x</strong>, both Ace-high <strong>40x</strong>.
+                              </div>
+                            </div>
+                          </div>
+                        </div>,
+                        document.body,
+                      )
+                    : null}
                 </span>
               </div>
               <div className="totalWagerPill" title="Total wager">
