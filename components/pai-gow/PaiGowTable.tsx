@@ -4,7 +4,7 @@
 //   C:\Users\echom\Desktop\PaiGow\ape-gow\ui\src\App.tsx
 // Goal: keep gameplay identical; only adjust imports/paths for Next.js template.
 
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 import { hashSeedToU32 } from "@/lib/pai-gow-sim/prng";
 import type { Card as SimCard, SevenCardHand, PlayerSplit as SimPlayerSplit, FiveCardHand, TwoCardHand } from "@/lib/pai-gow-sim/types";
@@ -299,7 +299,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
 
   function handleReset() {
     setIsGameFinished(false);
-    // Full reset back to setup view (ApeChurch requirement)
+    // Full reset back to setup view
     resetHands();
     setIsLoading(false);
     setCurrentView(0);
@@ -311,6 +311,14 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     setMainChips([]);
     setSideChips([]);
     setPushChips([]);
+  }
+
+  function handleChangeBet() {
+    setIsGameFinished(false);
+    // Back to setup view, but keep current bet so the user can tweak.
+    resetHands();
+    setIsLoading(false);
+    setCurrentView(0);
   }
 
   function handlePlayAgain() {
@@ -424,12 +432,12 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     }, 7 * 120 + 650);
   }
 
-  function flipAllPlayer() {
+  const flipAllPlayer = useCallback(() => {
     if (!dealerArranged) return;
     setPlayerFlipped(Array(7).fill(true));
-  }
+  }, [dealerArranged]);
 
-  function autoSplitHouseWay() {
+  const autoSplitHouseWay = useCallback(() => {
     if (!canSplit) return;
 
     // Map split cards back to indices in the 7-card hand (handle duplicates safely)
@@ -457,7 +465,18 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
       setHighIdx(high);
       setAssignTarget("low");
     }
-  }
+  }, [canSplit, view.player7]);
+
+  // One-click flow: once the dealer is arranged, reveal player cards and auto-split.
+  useEffect(() => {
+    if (!dealerArranged) return;
+    flipAllPlayer();
+  }, [dealerArranged, flipAllPlayer]);
+
+  useEffect(() => {
+    if (!canSplit) return;
+    autoSplitHouseWay();
+  }, [canSplit, autoSplitHouseWay]);
 
   const chipValues = [1, 5, 10, 25, 100];
 
@@ -612,28 +631,30 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
             </div>
           </div>
           <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {/* Once Play is pressed, treat the hand as committed (bets locked). */}
+            {/* Primary CTA: one-click hand. */}
             <button
               className="btn"
-              onClick={handlePlayAgain}
-              // Lock while the current hand is in progress, but allow starting a new one after results.
-              disabled={isLoading || (!isGameFinished && dealerRevealed)}
+              onClick={isGameFinished ? handlePlayAgain : playGame}
+              disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
             >
-              New hand
+              {isLoading
+                ? "Confirming…"
+                : isGameFinished
+                  ? "Play again"
+                  : dealerRevealed
+                    ? dealerArranged
+                      ? "In hand…"
+                      : "Flipping…"
+                    : "Play"}
             </button>
+
+            {/* Escape hatch: tweak bet (keeps current wager amount). */}
             <button
               className="btn"
-              onClick={handleReset}
-              // Allow reset after results; lock only during an in-progress hand.
+              onClick={handleChangeBet}
               disabled={isLoading || (!isGameFinished && dealerRevealed)}
             >
-              Reset
-            </button>
-            <button className="btn" onClick={autoSplitHouseWay} disabled={!canSplit}>
-              Auto-split
-            </button>
-            <button className="btn" onClick={playGame} disabled={dealerRevealed || isLoading || !hasMainBet}>
-              {isLoading ? "Confirming…" : dealerRevealed ? (dealerArranged ? "Dealer arranged" : "Flipping…") : "Play"}
+              Change bet
             </button>
           </div>
           </div>
