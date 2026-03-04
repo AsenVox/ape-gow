@@ -470,12 +470,16 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   // One-click flow: once the dealer is arranged, reveal player cards and auto-split.
   useEffect(() => {
     if (!dealerArranged) return;
-    flipAllPlayer();
+    // Let the arrange animation settle, then reveal player hand.
+    const t = window.setTimeout(() => flipAllPlayer(), 50);
+    return () => window.clearTimeout(t);
   }, [dealerArranged, flipAllPlayer]);
 
   useEffect(() => {
     if (!canSplit) return;
-    autoSplitHouseWay();
+    // Give React a beat to apply the "all revealed" state before mapping indices.
+    const t = window.setTimeout(() => autoSplitHouseWay(), 0);
+    return () => window.clearTimeout(t);
   }, [canSplit, autoSplitHouseWay]);
 
   const chipValues = [1, 5, 10, 25, 100];

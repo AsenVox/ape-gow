@@ -10,8 +10,9 @@
 }
 
 .tableWrap{
-  min-height: 100vh;
-  background: var(--felt);
+  /* When embedded in the template GameWindow, let the parent background show through. */
+  min-height: 100%;
+  background: transparent;
   color: var(--text);
 }
 
@@ -25,18 +26,22 @@
   margin-top: 14px;
   border-radius: 22px;
   border: 1px solid rgba(215,225,230,0.12);
-  background: rgba(0,0,0,0.55);
+  /* keep it readable, but let more of the GameWindow background show */
+  background: rgba(0,0,0,0.35);
   box-shadow: 0 18px 60px rgba(0,0,0,0.55);
   overflow: hidden;
 }
 
 .rail{
+  position: relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding: 14px 16px;
   border-bottom: 1px solid rgba(215,225,230,0.10);
-  background: rgba(10,10,10,0.55);
+  /* More transparent so the full background image reads behind the header */
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(2px);
 }
 
 .brand{
@@ -276,6 +281,12 @@
   align-items:center;
   justify-content:flex-end;
   flex-wrap:wrap;
+
+  /* Put controls into the empty top-right area (like the screenshot callout) */
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Jackpot dot placement (desktop defaults: hide; mobile shows near chips) */
@@ -320,11 +331,16 @@
   .brand{
     flex: 1 1 240px;
     min-width: 240px;
+    padding-right: 160px; /* leave space for top-right controls */
   }
 
   .controls{
-    width: 100%;
-    justify-content: flex-start;
+    width: auto;
+    justify-content: flex-end;
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    transform: none;
   }
 
   .zone{
