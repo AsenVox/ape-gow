@@ -214,27 +214,7 @@
   justify-content:center;
   gap: 14px;
   padding: 12px 10px 6px;
-
-  position: relative;
-  overflow: hidden;
-  border-radius: 18px;
 }
-
-.betLane::before{
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/pai-gow/bet-lane-bg.jpg');
-  /* Zoom/crop in so the art fills behind the chip stacks too */
-  background-size: 160% 160%;
-  background-position: center;
-  opacity: 0.26;
-  pointer-events: none;
-  z-index: 0;
-  filter: saturate(1.05) contrast(1.05);
-}
-
-.betLane > *{ position: relative; z-index: 1; }
 
 .betSpot{
   width: 150px;
@@ -250,6 +230,23 @@
   /* allow chip stacks to rise above the bet pill on mobile */
   overflow: visible;
 }
+
+/* Put the art behind the actual bet spots (where chips live), not the whole lane. */
+.betSpot::before{
+  content: '';
+  position: absolute;
+  inset: -12px; /* extend behind chip stacks a bit */
+  border-radius: 999px;
+  background-image: url('/pai-gow/bet-lane-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  filter: saturate(1.05) contrast(1.08) blur(0.6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.betSpot > *{ position: relative; z-index: 1; }
 
 .betSpot .chipStack{
   /* keep chips behind labels so BONUS + value stay readable */
