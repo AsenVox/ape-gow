@@ -612,10 +612,20 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </div>
           <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {/* Once Play is pressed, treat the hand as committed (bets locked). */}
-            <button className="btn" onClick={handlePlayAgain} disabled={isLoading || dealerRevealed}>
+            <button
+              className="btn"
+              onClick={handlePlayAgain}
+              // Lock while the current hand is in progress, but allow starting a new one after results.
+              disabled={isLoading || (!isGameFinished && dealerRevealed)}
+            >
               New hand
             </button>
-            <button className="btn" onClick={handleReset} disabled={isLoading || dealerRevealed}>
+            <button
+              className="btn"
+              onClick={handleReset}
+              // Allow reset after results; lock only during an in-progress hand.
+              disabled={isLoading || (!isGameFinished && dealerRevealed)}
+            >
               Reset
             </button>
             <button className="btn" onClick={autoSplitHouseWay} disabled={!canSplit}>
