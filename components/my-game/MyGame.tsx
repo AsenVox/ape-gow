@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useRef, useState } from "react";
+import { paiGowCss } from "./paiGowStyles";
 import { bytesToHex } from "viem";
 import { myGame } from "./myGameConfig";
 import GameWindow from "@/components/shared/GameWindow";
@@ -105,6 +106,8 @@ export default function MyGameComponent() {
         ) : null
       }
     >
+      {/* Submission-safe styling: inject our global table CSS from within the game component. */}
+      <style jsx global>{paiGowCss}</style>
       <PaiGowTable ref={tableRef} onStatusChange={setStatus} hideHeader={false} />
     </GameWindow>
   );
