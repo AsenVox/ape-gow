@@ -226,8 +226,8 @@
   inset: 0;
   background-image: url('/pai-gow/bet-lane-bg.jpg');
   background-size: cover;
-  background-position: 50% 55%;
-  opacity: 0.22;
+  background-position: center;
+  opacity: 0.26;
   pointer-events: none;
   z-index: 0;
   filter: saturate(1.05) contrast(1.05);
