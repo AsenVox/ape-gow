@@ -115,7 +115,7 @@
   background-image: url('/pai-gow/header-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: 35% 50%;
   background-color: rgba(0,0,0,0.10);
 }
 
