@@ -108,7 +108,12 @@ export default function MyGameComponent() {
     >
       {/* Submission-safe styling: inject our global table CSS from within the game component. */}
       <style jsx global>{paiGowCss}</style>
-      <PaiGowTable ref={tableRef} onStatusChange={setStatus} hideHeader={false} />
+      <PaiGowTable
+        ref={tableRef}
+        onStatusChange={setStatus}
+        hideHeader={false}
+        desktopSidebarHostId="pai-gow-desktop-sidebar-host"
+      />
     </GameWindow>
   );
 }

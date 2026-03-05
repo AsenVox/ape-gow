@@ -111,10 +111,12 @@ type PaiGowTableProps = {
   onStatusChange?: (s: PaiGowTableStatus) => void;
   /** When the table is rendered inside the template GameWindow, hide the extra top rail/header. */
   hideHeader?: boolean;
+  /** On desktop, render the banner + betting UI into this element (template SetupCard). */
+  desktopSidebarHostId?: string;
 };
 
 const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function PaiGowTable(
-  { onStatusChange, hideHeader = false },
+  { onStatusChange, hideHeader = false, desktopSidebarHostId },
   ref,
 ) {
   const [seed, setSeed] = useState("demo-seed-1"); // deterministic per hand
@@ -149,6 +151,13 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     window.addEventListener("resize", apply);
     return () => window.removeEventListener("resize", apply);
   }, []);
+
+  // Desktop: optionally portal the sidebar (banner + betting UI) into the template SetupCard.
+  // Keep this as a plain lookup (not memoized) so it works even if the host mounts slightly later.
+  const desktopSidebarHost =
+    desktopLayout && desktopSidebarHostId && typeof document !== "undefined"
+      ? document.getElementById(desktopSidebarHostId)
+      : null;
 
   useEffect(() => {
     if (!paytableOpen) return;
@@ -630,6 +639,293 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     });
   }, [onStatusChange, isLoading, isGameFinished, totalBet, netPayout, r, main, side, push, mainPayout, bonusPayout, pushPayout]);
 
+  const sidebarContent = (
+    <div
+      className="pgSidebar"
+      style={
+        desktopLayout
+          ? ({
+              gridColumn: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
+      {desktopLayout && !hideHeader ? (
+        <div
+          className="rail"
+          style={
+            desktopLayout
+              ? ({
+                  borderBottomLeftRadius: 0,
+                  borderBottomRightRadius: 0,
+                } as React.CSSProperties)
+              : undefined
+          }
+        >
+          <div className="brand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
+            <div>
+              <div className="title">Pai Gow</div>
+              <div className="sub">dealer flips → arranges → player flips → split</div>
+            </div>
+          </div>
+          <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {/* Primary CTA: one-click hand. */}
+            <button
+              className="btn"
+              onClick={isGameFinished ? handlePlayAgain : playGame}
+              disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
+            >
+              {isLoading
+                ? "Confirming…"
+                : isGameFinished
+                  ? "Play again"
+                  : dealerRevealed
+                    ? dealerArranged
+                      ? "In hand…"
+                      : "Flipping…"
+                    : "Play"}
+            </button>
+
+            {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Bets UI (ported): chips stack on the bet spots */}
+      <div
+        className="zone betZone"
+        style={
+          desktopLayout
+            ? ({
+                marginTop: 0,
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0,
+                borderTop: "0",
+              } as React.CSSProperties)
+            : undefined
+        }
+      >
+        <div className="zoneHeader">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <div className="zoneLabel">BETS</div>
+            <div style={{ fontSize: 12, display: "inline-flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{ opacity: 0.72 }}>Chips are units (1/5/10/25/100).</span>
+
+              <span className="infoWrap" style={{ opacity: 1 }}>
+                <button
+                  type="button"
+                  className="infoIcon"
+                  aria-label="Paytable info"
+                  aria-expanded={paytableOpen}
+                  title="Paytable"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setPaytableOpen((v) => !v);
+                  }}
+                >
+                  i
+                </button>
+
+                {canPortal && paytableOpen
+                  ? createPortal(
+                      <div className="paytableOverlay" role="presentation" onClick={() => setPaytableOpen(false)}>
+                        <div
+                          className="infoPopover infoPopoverOpen"
+                          role="dialog"
+                          aria-label="Paytable"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div style={{ fontWeight: 950, letterSpacing: 1.6, opacity: 0.9 }}>Paytable</div>
+                          <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.92 }}>
+                            <div style={{ fontWeight: 900, opacity: 0.95 }}>BONUS (7-card)</div>
+                            <div>7-card Straight Flush (no Joker): <strong>5000x</strong></div>
+                            <div>Royal Flush + Royal Match: <strong>2000x</strong></div>
+                            <div>7-card Straight Flush (with Joker): <strong>1000x</strong></div>
+                            <div>Five Aces: <strong>400x</strong></div>
+                            <div>Royal Flush: <strong>150x</strong></div>
+                            <div>Straight Flush: <strong>50x</strong></div>
+                            <div>Four of a Kind: <strong>25x</strong></div>
+                            <div>Full House: <strong>5x</strong></div>
+                            <div>Flush: <strong>4x</strong></div>
+                            <div>Three of a Kind: <strong>3x</strong></div>
+                            <div>Straight: <strong>2x</strong></div>
+
+                            <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.95 }}>PUSH (Ace High)</div>
+                            <div>If dealer best 5-card hand is Ace-high, MAIN pushes.</div>
+                            <div>
+                              PUSH side bet pays: Dealer Ace High <strong>5x</strong>, w/ Joker <strong>15x</strong>, both Ace-high <strong>40x</strong>.
+                            </div>
+                          </div>
+                        </div>
+                      </div>,
+                      document.body,
+                    )
+                  : null}
+              </span>
+            </div>
+            <div className="totalWagerPill" title="Total wager">
+              Total: <strong>{totalBet}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div className="betLane">
+          <button className="betSpot betSpotBonus" onClick={placeSideChip} disabled={betsLocked} title="Place Bonus bet">
+            <div className="chipStack" aria-hidden>
+              {sideChips.slice(0, 22).map((v, i) => {
+                const w = wobbleStyle(v, i);
+                return (
+                  <div
+                    key={`side-${i}`}
+                    className={`stackChip chipV${v}`}
+                    style={{
+                      bottom: i * 4,
+                      left: `${w.x}px`,
+                      transform: `rotate(${w.rot}deg) translateZ(0)`,
+                    }}
+                  >
+                    {v}
+                  </div>
+                );
+              })}
+            </div>
+
+            {sideChips.length ? (
+              <button
+                type="button"
+                className="betBackBtn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  undoSideChip();
+                }}
+                disabled={betsLocked}
+                title="Remove last chip"
+                aria-label="Remove last chip"
+              >
+                ↩
+              </button>
+            ) : null}
+
+            <div className="betContent">
+              <div className="betName">BONUS</div>
+              <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{side}</div>
+            </div>
+          </button>
+
+          <button className="betSpot betSpotPush" onClick={placePushChip} disabled={betsLocked} title="Place Push Ace High bet">
+            <div className="chipStack" aria-hidden>
+              {pushChips.slice(0, 22).map((v, i) => {
+                const w = wobbleStyle(v, i);
+                return (
+                  <div
+                    key={`push-${i}`}
+                    className={`stackChip chipV${v}`}
+                    style={{
+                      bottom: i * 4,
+                      left: `${w.x}px`,
+                      transform: `rotate(${w.rot}deg) translateZ(0)`,
+                    }}
+                  >
+                    {v}
+                  </div>
+                );
+              })}
+            </div>
+
+            {pushChips.length ? (
+              <button
+                type="button"
+                className="betBackBtn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  undoPushChip();
+                }}
+                disabled={betsLocked}
+                title="Remove last chip"
+                aria-label="Remove last chip"
+              >
+                ↩
+              </button>
+            ) : null}
+
+            <div className="betContent">
+              <div className="betName">PUSH</div>
+              <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{push}</div>
+            </div>
+          </button>
+
+          <button className="betSpot betSpotMain" onClick={placeMainChip} disabled={betsLocked} title="Place Main bet">
+            <div className="chipStack" aria-hidden>
+              {mainChips.slice(0, 22).map((v, i) => {
+                const w = wobbleStyle(v, i);
+                return (
+                  <div
+                    key={`main-${i}`}
+                    className={`stackChip chipV${v}`}
+                    style={{
+                      bottom: i * 4,
+                      left: `${w.x}px`,
+                      transform: `rotate(${w.rot}deg) translateZ(0)`,
+                    }}
+                  >
+                    {v}
+                  </div>
+                );
+              })}
+            </div>
+
+            {mainChips.length ? (
+              <button
+                type="button"
+                className="betBackBtn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  undoMainChip();
+                }}
+                disabled={betsLocked}
+                title="Remove last chip"
+                aria-label="Remove last chip"
+              >
+                ↩
+              </button>
+            ) : null}
+
+            <div className="betContent">
+              <div className="betName">MAIN</div>
+              <div className="betValue" style={{ marginTop: 6, fontWeight: 900, fontSize: 18 }}>{main}</div>
+            </div>
+          </button>
+        </div>
+
+        <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
+          <div className="chipRack">
+            {chipValues.map((v) => (
+              <button
+                key={v}
+                className={v === activeChip ? "chip chipActive" : "chip"}
+                onClick={() => setActiveChip(v)}
+                disabled={betsLocked}
+                style={chipStyleFor(v)}
+                title={`Select ${v} chip`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="tableWrap">
       <div className={hideHeader ? "table tableNoRail" : "table"}>
@@ -639,7 +935,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
             desktopLayout
               ? {
                   display: "grid",
-                  gridTemplateColumns: "1fr 360px",
+                  gridTemplateColumns: desktopSidebarHost ? "1fr" : "1fr 360px",
                   gap: 14,
                   alignItems: "start",
                 }
@@ -793,295 +1089,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </div>
         </div>
 
-          </div>
-
-          <div
-            className="pgSidebar"
-            style={
-              desktopLayout
-                ? ({
-                    gridColumn: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 0,
-                  } as React.CSSProperties)
-                : undefined
-            }
-          >
-            {desktopLayout && !hideHeader ? (
-              <div
-                className="rail"
-                style={
-                  desktopLayout
-                    ? ({
-                        borderBottomLeftRadius: 0,
-                        borderBottomRightRadius: 0,
-                      } as React.CSSProperties)
-                    : undefined
-                }
-              >
-                <div className="brand">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
-                  <div>
-                    <div className="title">Pai Gow</div>
-                    <div className="sub">dealer flips → arranges → player flips → split</div>
-                  </div>
-                </div>
-                <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  {/* Primary CTA: one-click hand. */}
-                  <button
-                    className="btn"
-                    onClick={isGameFinished ? handlePlayAgain : playGame}
-                    disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
-                  >
-                    {isLoading
-                      ? "Confirming…"
-                      : isGameFinished
-                        ? "Play again"
-                        : dealerRevealed
-                          ? dealerArranged
-                            ? "In hand…"
-                            : "Flipping…"
-                          : "Play"}
-                  </button>
-
-                  {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
-                </div>
-              </div>
-            ) : null}
-
-            {/* Bets UI (ported): chips stack on the bet spots */}
-            <div
-              className="zone betZone"
-              style={
-                desktopLayout
-                  ? ({
-                      marginTop: 0,
-                      borderTopLeftRadius: 0,
-                      borderTopRightRadius: 0,
-                      borderTop: "0",
-                    } as React.CSSProperties)
-                  : undefined
-              }
-            >
-          <div className="zoneHeader">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <div className="zoneLabel">BETS</div>
-              <div style={{ fontSize: 12, display: "inline-flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <span style={{ opacity: 0.72 }}>Chips are units (1/5/10/25/100).</span>
-
-                <span className="infoWrap" style={{ opacity: 1 }}>
-                  <button
-                    type="button"
-                    className="infoIcon"
-                    aria-label="Paytable info"
-                    aria-expanded={paytableOpen}
-                    title="Paytable"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setPaytableOpen((v) => !v);
-                    }}
-                  >
-                    i
-                  </button>
-
-                  {canPortal && paytableOpen
-                    ? createPortal(
-                        <div
-                          className="paytableOverlay"
-                          role="presentation"
-                          onClick={() => setPaytableOpen(false)}
-                        >
-                          <div
-                            className="infoPopover infoPopoverOpen"
-                            role="dialog"
-                            aria-label="Paytable"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div style={{ fontWeight: 950, letterSpacing: 1.6, opacity: 0.9 }}>Paytable</div>
-                            <div style={{ marginTop: 8, display: "grid", gap: 6, fontSize: 12, opacity: 0.92 }}>
-                              <div style={{ fontWeight: 900, opacity: 0.95 }}>BONUS (7-card)</div>
-                              <div>7-card Straight Flush (no Joker): <strong>5000x</strong></div>
-                              <div>Royal Flush + Royal Match: <strong>2000x</strong></div>
-                              <div>7-card Straight Flush (with Joker): <strong>1000x</strong></div>
-                              <div>Five Aces: <strong>400x</strong></div>
-                              <div>Royal Flush: <strong>150x</strong></div>
-                              <div>Straight Flush: <strong>50x</strong></div>
-                              <div>Four of a Kind: <strong>25x</strong></div>
-                              <div>Full House: <strong>5x</strong></div>
-                              <div>Flush: <strong>4x</strong></div>
-                              <div>Three of a Kind: <strong>3x</strong></div>
-                              <div>Straight: <strong>2x</strong></div>
-
-                              <div style={{ marginTop: 8, fontWeight: 900, opacity: 0.95 }}>PUSH (Ace High)</div>
-                              <div>If dealer best 5-card hand is Ace-high, MAIN pushes.</div>
-                              <div>
-                                PUSH side bet pays: Dealer Ace High <strong>5x</strong>, w/ Joker <strong>15x</strong>, both Ace-high <strong>40x</strong>.
-                              </div>
-                            </div>
-                          </div>
-                        </div>,
-                        document.body,
-                      )
-                    : null}
-                </span>
-              </div>
-              <div className="totalWagerPill" title="Total wager">
-                Total: <strong>{totalBet}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className="betLane">
-            <button className="betSpot betSpotBonus" onClick={placeSideChip} disabled={betsLocked} title="Place Bonus bet">
-              <div className="chipStack" aria-hidden>
-                {sideChips.slice(0, 22).map((v, i) => {
-                  const w = wobbleStyle(v, i);
-                  return (
-                    <div
-                      key={`side-${i}`}
-                      className={`stackChip chipV${v}`}
-                      style={{
-                        bottom: i * 4,
-                        left: `${w.x}px`,
-                        transform: `rotate(${w.rot}deg) translateZ(0)`,
-                      }}
-                    >
-                      {v}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {sideChips.length ? (
-                <button
-                  type="button"
-                  className="betBackBtn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    undoSideChip();
-                  }}
-                  disabled={betsLocked}
-                  title="Remove last chip"
-                  aria-label="Remove last chip"
-                >
-                  ↩
-                </button>
-              ) : null}
-
-              <div className="betContent">
-                <div className="betName">BONUS</div>
-                <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{side}</div>
-              </div>
-            </button>
-
-            <button className="betSpot betSpotPush" onClick={placePushChip} disabled={betsLocked} title="Place Push Ace High bet">
-              <div className="chipStack" aria-hidden>
-                {pushChips.slice(0, 22).map((v, i) => {
-                  const w = wobbleStyle(v, i);
-                  return (
-                    <div
-                      key={`push-${i}`}
-                      className={`stackChip chipV${v}`}
-                      style={{
-                        bottom: i * 4,
-                        left: `${w.x}px`,
-                        transform: `rotate(${w.rot}deg) translateZ(0)`,
-                      }}
-                    >
-                      {v}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {pushChips.length ? (
-                <button
-                  type="button"
-                  className="betBackBtn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    undoPushChip();
-                  }}
-                  disabled={betsLocked}
-                  title="Remove last chip"
-                  aria-label="Remove last chip"
-                >
-                  ↩
-                </button>
-              ) : null}
-
-              <div className="betContent">
-                <div className="betName">PUSH</div>
-                <div className="betValue" style={{ marginTop: 6, fontWeight: 900 }}>{push}</div>
-              </div>
-            </button>
-
-            <button className="betSpot betSpotMain" onClick={placeMainChip} disabled={betsLocked} title="Place Main bet">
-              <div className="chipStack" aria-hidden>
-                {mainChips.slice(0, 22).map((v, i) => {
-                  const w = wobbleStyle(v, i);
-                  return (
-                    <div
-                      key={`main-${i}`}
-                      className={`stackChip chipV${v}`}
-                      style={{
-                        bottom: i * 4,
-                        left: `${w.x}px`,
-                        transform: `rotate(${w.rot}deg) translateZ(0)`,
-                      }}
-                    >
-                      {v}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {mainChips.length ? (
-                <button
-                  type="button"
-                  className="betBackBtn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    undoMainChip();
-                  }}
-                  disabled={betsLocked}
-                  title="Remove last chip"
-                  aria-label="Remove last chip"
-                >
-                  ↩
-                </button>
-              ) : null}
-
-              <div className="betContent">
-                <div className="betName">MAIN</div>
-                <div className="betValue" style={{ marginTop: 6, fontWeight: 900, fontSize: 18 }}>{main}</div>
-              </div>
-            </button>
-          </div>
-
-          <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
-            <div className="chipRack">
-              {chipValues.map((v) => (
-                <button
-                  key={v}
-                  className={v === activeChip ? "chip chipActive" : "chip"}
-                  onClick={() => setActiveChip(v)}
-                  disabled={betsLocked}
-                  style={chipStyleFor(v)}
-                  title={`Select ${v} chip`}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-          </div>
+          {desktopLayout && desktopSidebarHost ? null : sidebarContent}
+          {desktopLayout && desktopSidebarHost ? createPortal(sidebarContent, desktopSidebarHost) : null}
         </div>
       </div>
     </div>

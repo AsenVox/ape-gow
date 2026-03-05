@@ -1,9 +1,13 @@
 "use client";
 
-// (React import not needed with the new JSX transform)
+import React from "react";
 
-// Placeholder to satisfy template structure.
-// Pai Gow currently uses its own in-table controls; we will migrate these into the template SetupCard next.
+// Template SetupCard (right panel). The platform will render this alongside MyGameWindow.
+// We provide a stable host element that PaiGowTable can portal its desktop sidebar into.
 export default function MyGameSetupCard() {
-  return null;
+  return (
+    <div style={{ height: "100%", minHeight: 0 }}>
+      <div id="pai-gow-desktop-sidebar-host" style={{ height: "100%", minHeight: 0 }} />
+    </div>
+  );
 }
