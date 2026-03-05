@@ -140,14 +140,22 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const [canPortal, setCanPortal] = useState(false);
   useEffect(() => setCanPortal(true), []);
 
-  // Desktop layout: force left playfield + right sidebar based on viewport (not container width).
+  // Desktop layout: force left playfield + right sidebar based on input modality (desktop vs touch).
+  // This survives being embedded in narrow containers (Ape.church shell).
   const [desktopLayout, setDesktopLayout] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 700px)");
-    const apply = () => setDesktopLayout(mq.matches);
+    const mqDesktop = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const mqWide = window.matchMedia("(min-width: 700px)");
+
+    const apply = () => setDesktopLayout(mqDesktop.matches || mqWide.matches);
     apply();
-    mq.addEventListener?.("change", apply);
-    return () => mq.removeEventListener?.("change", apply);
+
+    mqDesktop.addEventListener?.("change", apply);
+    mqWide.addEventListener?.("change", apply);
+    return () => {
+      mqDesktop.removeEventListener?.("change", apply);
+      mqWide.removeEventListener?.("change", apply);
+    };
   }, []);
 
   useEffect(() => {
