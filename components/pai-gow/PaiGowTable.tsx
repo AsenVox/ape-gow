@@ -140,6 +140,16 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const [canPortal, setCanPortal] = useState(false);
   useEffect(() => setCanPortal(true), []);
 
+  // Desktop layout: force left playfield + right sidebar based on viewport (not container width).
+  const [desktopLayout, setDesktopLayout] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 700px)");
+    const apply = () => setDesktopLayout(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, []);
+
   useEffect(() => {
     if (!paytableOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -623,8 +633,20 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   return (
     <div className="tableWrap">
       <div className={hideHeader ? "table tableNoRail" : "table"}>
-        <div className="pgLayout">
-          <div className="felt">
+        <div
+          className="pgLayout"
+          style={
+            desktopLayout
+              ? {
+                  display: "grid",
+                  gridTemplateColumns: "1fr 360px",
+                  gap: 14,
+                  alignItems: "start",
+                }
+              : undefined
+          }
+        >
+          <div className="felt" style={desktopLayout ? ({ gridColumn: 1, marginTop: 0 } as React.CSSProperties) : undefined}>
           <div className="zone dealerZone">
             <div className="zoneHeader">
               <div className="zoneLabel">DEALER</div>
@@ -743,9 +765,31 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
 
           </div>
 
-          <div className="pgSidebar">
+          <div
+            className="pgSidebar"
+            style={
+              desktopLayout
+                ? ({
+                    gridColumn: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 0,
+                  } as React.CSSProperties)
+                : undefined
+            }
+          >
             {!hideHeader ? (
-              <div className="rail">
+              <div
+                className="rail"
+                style={
+                  desktopLayout
+                    ? ({
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                      } as React.CSSProperties)
+                    : undefined
+                }
+              >
                 <div className="brand">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
@@ -778,7 +822,19 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
             ) : null}
 
             {/* Bets UI (ported): chips stack on the bet spots */}
-            <div className="zone betZone">
+            <div
+              className="zone betZone"
+              style={
+                desktopLayout
+                  ? ({
+                      marginTop: 0,
+                      borderTopLeftRadius: 0,
+                      borderTopRightRadius: 0,
+                      borderTop: "0",
+                    } as React.CSSProperties)
+                  : undefined
+              }
+            >
           <div className="zoneHeader">
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <div className="zoneLabel">BETS</div>
