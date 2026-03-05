@@ -45,12 +45,18 @@
   }
 
   /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
+  /* Right panel: ONE bordered vertical rectangle (banner stacked on top of bets/chips) */
   .pgSidebar{
     grid-column: 2;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0;
-    height: 100%;
+    overflow: hidden;
+
+    border-radius: 22px;
+    border: 1px solid rgba(215,225,230,0.12);
+    background: rgba(0,0,0,0.35);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.55);
   }
 
   .rail{
@@ -59,20 +65,26 @@
     flex: 0 0 38%;
     min-height: 220px;
     background-position: 55% 46%;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+
+    /* Sidebar box provides the border/radius */
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .betZone{
     margin-top: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top: 0;
+
+    /* Sidebar box provides the border/radius */
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
 
     /* bottom chunk of the sidebar; scroll internally if needed */
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
+    background: transparent;
   }
 
   .controls .btn{
