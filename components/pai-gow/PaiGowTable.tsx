@@ -657,6 +657,36 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               : undefined
           }
         >
+          {!desktopLayout && !hideHeader ? (
+            <div className="rail">
+              <div className="brand">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
+                <div>
+                  <div className="title">Pai Gow</div>
+                  <div className="sub">dealer flips → arranges → player flips → split</div>
+                </div>
+              </div>
+              <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button
+                  className="btn"
+                  onClick={isGameFinished ? handlePlayAgain : playGame}
+                  disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
+                >
+                  {isLoading
+                    ? "Confirming…"
+                    : isGameFinished
+                      ? "Play again"
+                      : dealerRevealed
+                        ? dealerArranged
+                          ? "In hand…"
+                          : "Flipping…"
+                        : "Play"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <div className="felt" style={desktopLayout ? ({ gridColumn: 1, marginTop: 0 } as React.CSSProperties) : undefined}>
           <div className="zone dealerZone">
             <div className="zoneHeader">
@@ -789,7 +819,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                 : undefined
             }
           >
-            {!hideHeader ? (
+            {desktopLayout && !hideHeader ? (
               <div
                 className="rail"
                 style={
