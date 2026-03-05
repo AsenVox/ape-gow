@@ -47,6 +47,7 @@
   }
 
   .rail{
+    margin-top: 0;
     min-height: 320px;
     background-position: 55% 46%;
     border-bottom-left-radius: 0;
