@@ -198,7 +198,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     disablePictureInPicture={true}
                     className="absolute inset-0 w-full h-full object-cover rounded-[8px] pointer-events-none"
                 />
-            ) : (
+            ) : game.gameBackground && game.gameBackground !== "" ? (
                 <Image
                     src={game.gameBackground}
                     alt="Game Background"
@@ -214,6 +214,8 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     }}
                     priority
                 />
+            ) : (
+                <div className="absolute inset-0 w-full h-full rounded-[8px] bg-black/80" />
             )}
 
             <div className="relative z-10 w-full h-full">

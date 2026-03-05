@@ -103,7 +103,7 @@
   row-gap: 10px;
   align-items: start;
   padding: 18px 16px;
-  min-height: 220px; /* enough height to show the full header art */
+  min-height: 280px; /* enough height to show the full header art (desktop) */
 
   /* match section "pill" outline */
   margin: 14px 0 0;
@@ -115,8 +115,8 @@
   background-image: url('/my-game/header-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
-  /* Shift the art left so the right-side "PAI GOW" text isn't cropped */
-  background-position: 65% 50%;
+  /* Shift the art left and slightly up so the "PAI GOW" text isn't cropped */
+  background-position: 65% 42%;
   background-color: rgba(0,0,0,0.10);
 }
 
@@ -168,6 +168,15 @@
   background: #000;
   position: relative;
   overflow: hidden;
+}
+
+/* Desktop: give BETS its own bordered panel like RESULT */
+.betZone{
+  margin-top: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(215,225,230,0.12);
+  background: rgba(0,0,0,0.35);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
 }
 
 /* Subtle zone background art overlays */
