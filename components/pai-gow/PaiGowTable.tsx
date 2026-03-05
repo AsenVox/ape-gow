@@ -657,7 +657,8 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </div>
         ) : null}
 
-        <div className="felt">
+        <div className="pgLayout">
+          <div className="felt">
           <div className="zone dealerZone">
             <div className="zoneHeader">
               <div className="zoneLabel">DEALER</div>
@@ -992,6 +993,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               ))}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

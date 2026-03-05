@@ -9,9 +9,46 @@
 .tableWrap{
   /* When embedded in the template GameWindow, let the parent background show through. */
   min-height: 100%;
+  height: 100%;
   background: transparent;
   color: var(--text);
   position: relative; /* so overlays anchor correctly */
+}
+
+.pgLayout{
+  display: block;
+}
+
+/* Desktop: fill the GameWindow like other Ape.church games (game left, betting sidebar right) */
+@media (min-width: 980px){
+  .pgLayout{
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .betZone{
+    margin-top: 14px;
+    height: fit-content;
+  }
+
+  .betLane{
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 14px;
+  }
+
+  .betSpot,
+  .betSpotMain,
+  .betSpotBonus,
+  .betSpotPush{
+    width: 100% !important;
+    height: 92px;
+  }
+
+  .betSpotMain{ height: 104px; }
 }
 
 /* Results breakdown overlay shown alongside the template win/lose modal */
