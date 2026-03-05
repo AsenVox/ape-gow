@@ -17,6 +17,7 @@
 
 .pgLayout{
   display: block;
+  height: 100%;
 }
 
 /* Desktop: fill the GameWindow like other Ape.church games (game left, betting sidebar right) */
@@ -30,23 +31,33 @@
     align-items: start;
   }
 
-  /* Main playfield on the LEFT */
+  /* Main playfield on the LEFT (square that fills the GameWindow height) */
   .felt{
     grid-column: 1;
     margin-top: 0;
+
+    /* Make the left area behave like Ape.church games: a big square playfield */
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 100%;
+    width: 100%;
+    overflow: hidden;
   }
 
-  /* Sidebar on the RIGHT: banner + betting stacked with NO gap */
+  /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
   .pgSidebar{
     grid-column: 2;
     display: flex;
     flex-direction: column;
     gap: 0;
+    height: 100%;
   }
 
   .rail{
     margin-top: 0;
-    min-height: 320px;
+    /* top chunk of the sidebar */
+    flex: 0 0 38%;
+    min-height: 220px;
     background-position: 55% 46%;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -57,7 +68,11 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-top: 0;
-    height: fit-content;
+
+    /* bottom chunk of the sidebar; scroll internally if needed */
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
   }
 
   .controls .btn{
