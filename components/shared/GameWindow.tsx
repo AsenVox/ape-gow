@@ -222,7 +222,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                 {children}
             </div>
 
-            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:flex-col">
                 <Button
                     variant="ghost"
                     size="icon"
