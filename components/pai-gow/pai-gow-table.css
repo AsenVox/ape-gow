@@ -23,6 +23,8 @@
 
 /* Desktop: fill the GameWindow like other Ape.church games (game left, betting sidebar right) */
 @media (min-width: 700px){
+  /* Fill the GameWindow on desktop like other Ape.church games */
+  .table{ max-width: 100%; width: 100%; padding: 14px; }
   .pgLayout{
     display: grid;
     grid-template-columns: 1fr 360px;
