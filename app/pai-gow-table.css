@@ -24,29 +24,36 @@
   .pgLayout{
     display: grid;
     grid-template-columns: 1fr 360px;
-    grid-template-rows: auto 1fr;
     gap: 14px;
     align-items: start;
   }
 
-  /* Place header art in the right sidebar so the main playfield has max width */
-  .rail{
-    grid-column: 2;
-    grid-row: 1;
-    min-height: 320px;
-    background-position: 55% 46%;
-  }
-
+  /* Main playfield on the LEFT */
   .felt{
     grid-column: 1;
-    grid-row: 1 / span 2;
     margin-top: 0;
+  }
+
+  /* Sidebar on the RIGHT: banner + betting stacked with NO gap */
+  .pgSidebar{
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .rail{
+    min-height: 320px;
+    background-position: 55% 46%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
   .betZone{
-    grid-column: 2;
-    grid-row: 2;
     margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0;
     height: fit-content;
   }
 

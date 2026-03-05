@@ -624,39 +624,6 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
     <div className="tableWrap">
       <div className={hideHeader ? "table tableNoRail" : "table"}>
         <div className="pgLayout">
-          {!hideHeader ? (
-            <div className="rail">
-              <div className="brand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
-                <div>
-                  <div className="title">Pai Gow</div>
-                  <div className="sub">dealer flips → arranges → player flips → split</div>
-                </div>
-              </div>
-              <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {/* Primary CTA: one-click hand. */}
-                <button
-                  className="btn"
-                  onClick={isGameFinished ? handlePlayAgain : playGame}
-                  disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
-                >
-                  {isLoading
-                    ? "Confirming…"
-                    : isGameFinished
-                      ? "Play again"
-                      : dealerRevealed
-                        ? dealerArranged
-                          ? "In hand…"
-                          : "Flipping…"
-                        : "Play"}
-                </button>
-
-                {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
-              </div>
-            </div>
-          ) : null}
-
           <div className="felt">
           <div className="zone dealerZone">
             <div className="zoneHeader">
@@ -774,8 +741,44 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </div>
         </div>
 
-        {/* Bets UI (ported): chips stack on the bet spots */}
-        <div className="zone betZone">
+          </div>
+
+          <div className="pgSidebar">
+            {!hideHeader ? (
+              <div className="rail">
+                <div className="brand">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
+                  <div>
+                    <div className="title">Pai Gow</div>
+                    <div className="sub">dealer flips → arranges → player flips → split</div>
+                  </div>
+                </div>
+                <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {/* Primary CTA: one-click hand. */}
+                  <button
+                    className="btn"
+                    onClick={isGameFinished ? handlePlayAgain : playGame}
+                    disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
+                  >
+                    {isLoading
+                      ? "Confirming…"
+                      : isGameFinished
+                        ? "Play again"
+                        : dealerRevealed
+                          ? dealerArranged
+                            ? "In hand…"
+                            : "Flipping…"
+                          : "Play"}
+                  </button>
+
+                  {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Bets UI (ported): chips stack on the bet spots */}
+            <div className="zone betZone">
           <div className="zoneHeader">
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <div className="zoneLabel">BETS</div>
@@ -992,7 +995,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               ))}
             </div>
           </div>
-        </div>
+          </div>
         </div>
       </div>
     </div>
