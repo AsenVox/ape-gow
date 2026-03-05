@@ -144,7 +144,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   // This avoids mis-detecting desktop PCs that report a coarse pointer (touch monitors / Windows settings).
   const [desktopLayout, setDesktopLayout] = useState(false);
   useEffect(() => {
-    const apply = () => setDesktopLayout(window.innerWidth >= 900);
+    const apply = () => setDesktopLayout(window.innerWidth >= 700);
     apply();
     window.addEventListener("resize", apply);
     return () => window.removeEventListener("resize", apply);
