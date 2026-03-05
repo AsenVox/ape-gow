@@ -1,4 +1,4 @@
-import { myGame } from "@/components/my-game/myGameConfig";
+import { paiGow } from "@/components/pai-gow/paiGowConfig";
 
 // Submission-friendly export.
-export { myGame };
+export { paiGow as myGame };
