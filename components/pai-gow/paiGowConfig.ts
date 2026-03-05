@@ -6,10 +6,10 @@ export const paiGow: Game = {
     gameAddress: "0x0000000000000000000000000000000000000000",
     // No outer background image (keep the template window clean).
     gameBackground: "",
-    // animatedBackground: "/my-game/animated-background.mp4",
-    card: "/my-game/card.png", // REQUIRED 1:1 aspect ratio
-    banner: "/my-game/banner.png", // REQUIRED 2:1 aspect ratio
-    advanceToNextStateAsset: "/my-game/advance-button.png", 
+    // animatedBackground: "/pai-gow/animated-background.mp4",
+    card: "/pai-gow/card.png", // REQUIRED 1:1 aspect ratio
+    banner: "/pai-gow/banner.png", // REQUIRED 2:1 aspect ratio
+    advanceToNextStateAsset: "/pai-gow/advance-button.png", 
     themeColorBackground: "#0B1220",
     // song: "/pai-gow/audio/song.mp3",
     payouts: {

@@ -19,7 +19,7 @@ import { eval2 } from "@/lib/pai-gow-sim/eval2";
 import { CardFace } from "./CardFace";
 
 // NOTE: We load assets from /public via absolute paths (Next.js safe).
-const acLogo = "/my-game/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
+const acLogo = "/pai-gow/assets/AC Logo/PNG/Logo_WithText/Logo_HorizontalText_White.png";
 
 type Card = SimCard;
 

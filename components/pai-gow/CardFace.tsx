@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Suit } from './Suit'
 import { suitColor, suitSymbol } from './suitUtils'
 
-const backLogo = '/my-game/assets/back-logo.png'
-const jokerCard = '/my-game/assets/cards/JOKER.png'
+const backLogo = '/pai-gow/assets/back-logo.png'
+const jokerCard = '/pai-gow/assets/cards/JOKER.png'
 
 // Next.js note: Vite's `import.meta.glob` isn't available.
 // We load card faces from `public/pai-gow/cards/*.png` by direct path.
@@ -80,7 +80,7 @@ export function CardFace({ card, onClick, tone = 'neutral', faceDown = false, ti
   }, [faceDown])
 
   const isJoker = card.suit === 'J'
-  const faceSrc = !isJoker ? `/my-game/assets/cards/${cardImageName(card.rank, card.suit)}` : undefined
+  const faceSrc = !isJoker ? `/pai-gow/assets/cards/${cardImageName(card.rank, card.suit)}` : undefined
 
   const usePngFace = !!faceSrc || isJoker
 

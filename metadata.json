@@ -16,8 +16,8 @@
     "example",
     "game"
   ],
-  "thumbnail": "/my-game/card.png",
-  "banner": "/my-game/banner.png",
+  "thumbnail": "/pai-gow/card.png",
+  "banner": "/pai-gow/banner.png",
   "mainComponent": "MyGame.tsx",
   "windowComponent": "MyGameWindow.tsx",
   "setupComponent": "MyGameSetupCard.tsx",
