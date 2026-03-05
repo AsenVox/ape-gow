@@ -140,27 +140,14 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const [canPortal, setCanPortal] = useState(false);
   useEffect(() => setCanPortal(true), []);
 
-  // Desktop layout: force left playfield + right sidebar on devices that are NOT touch-first.
-  // This is more reliable than UA sniffing when embedded in shells.
+  // Desktop layout: force 2-column layout based on viewport width.
+  // This avoids mis-detecting desktop PCs that report a coarse pointer (touch monitors / Windows settings).
   const [desktopLayout, setDesktopLayout] = useState(false);
   useEffect(() => {
-    const mqCoarse = window.matchMedia("(pointer: coarse)");
-    const mqWide = window.matchMedia("(min-width: 900px)");
-
-    const apply = () => {
-      const isTouchFirst = mqCoarse.matches;
-      // Touch-first devices keep the mobile stacked layout by default.
-      // If a touch device is very wide (e.g. tablet landscape), allow desktop layout.
-      setDesktopLayout(!isTouchFirst || mqWide.matches);
-    };
-
+    const apply = () => setDesktopLayout(window.innerWidth >= 900);
     apply();
-    mqCoarse.addEventListener?.("change", apply);
-    mqWide.addEventListener?.("change", apply);
-    return () => {
-      mqCoarse.removeEventListener?.("change", apply);
-      mqWide.removeEventListener?.("change", apply);
-    };
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
   }, []);
 
   useEffect(() => {
