@@ -22,7 +22,7 @@
 }
 
 /* Desktop: fill the GameWindow like other Ape.church games (game left, betting sidebar right) */
-@media (min-width: 860px){
+@media (min-width: 700px){
   .pgLayout{
     display: grid;
     grid-template-columns: 1fr 360px;
