@@ -12,11 +12,9 @@ const MyGamePage: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="flex flex-row mb-2 sm:mb-4">
-        <h1 className="text-3xl font-semibold mr-2">
-          {myGame.title}
-        </h1>
+        <h1 className="text-3xl font-semibold mr-2">{myGame.title}</h1>
       </div>
-      <MyGameComponent game={myGame} />
+      <MyGameComponent />
     </div>
   );
 };

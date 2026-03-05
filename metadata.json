@@ -1,12 +1,12 @@
 {
-  "team": "example-partner",
-  "gameName": "example-game",
-  "displayTitle": "Example Game",
-  "description": "This is an example game. Enter a description here - three sentences max.",
+  "team": "asen-vox",
+  "gameName": "pai-gow",
+  "displayTitle": "Pai Gow (Face Up)",
+  "description": "Face Up Pai Gow demo: dealer flips and arranges, player reveals and splits into low/high hands, then results settle with optional side bets.",
   "authors": [
     {
-      "name": "Example Partner",
-      "email": "example@example.com"
+      "name": "Asen Vox",
+      "email": "lilaofficehq@gmail.com"
     }
   ],
   "status": "pending",
@@ -21,6 +21,6 @@
   "mainComponent": "MyGame.tsx",
   "windowComponent": "MyGameWindow.tsx",
   "setupComponent": "MyGameSetupCard.tsx",
-  "configFile": "myGameConfig.ts",
+  "configFile": "gameConfig.ts", 
   "version": "1.0.0"
 }
