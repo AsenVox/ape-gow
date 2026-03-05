@@ -140,22 +140,25 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   const [canPortal, setCanPortal] = useState(false);
   useEffect(() => setCanPortal(true), []);
 
-  // Desktop layout: force left playfield + right sidebar based on input modality (desktop vs touch).
-  // This survives being embedded in narrow containers (Ape.church shell).
+  // Desktop layout: force left playfield + right sidebar on *PC*, even if embedded in narrow shells.
+  // We treat iPhone/Android/iPad as mobile; everything else is desktop.
   const [desktopLayout, setDesktopLayout] = useState(false);
   useEffect(() => {
-    const mqDesktop = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const mqWide = window.matchMedia("(min-width: 700px)");
+    const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
 
-    const apply = () => setDesktopLayout(mqDesktop.matches || mqWide.matches);
+    // If it's not a mobile UA, force desktop 2-col layout regardless of width.
+    if (!isMobileUA) {
+      setDesktopLayout(true);
+      return;
+    }
+
+    // Mobile UA: keep mobile layout (stacked). If you rotate to a huge width, allow desktop layout.
+    const mqWide = window.matchMedia("(min-width: 900px)");
+    const apply = () => setDesktopLayout(mqWide.matches);
     apply();
-
-    mqDesktop.addEventListener?.("change", apply);
     mqWide.addEventListener?.("change", apply);
-    return () => {
-      mqDesktop.removeEventListener?.("change", apply);
-      mqWide.removeEventListener?.("change", apply);
-    };
+    return () => mqWide.removeEventListener?.("change", apply);
   }, []);
 
   useEffect(() => {
