@@ -1,3 +1,5 @@
+import "./pai-gow-table.css";
+
 import { paiGow } from "@/components/pai-gow/paiGowConfig";
 import PaiGowGame from "@/components/pai-gow/PaiGowGame";
 
