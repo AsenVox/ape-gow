@@ -623,41 +623,40 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
   return (
     <div className="tableWrap">
       <div className={hideHeader ? "table tableNoRail" : "table"}>
-        {!hideHeader ? (
-          <div className="rail">
-          <div className="brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
-            <div>
-              <div className="title">Pai Gow</div>
-              <div className="sub">dealer flips → arranges → player flips → split</div>
-            </div>
-          </div>
-          <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {/* Primary CTA: one-click hand. */}
-            <button
-              className="btn"
-              onClick={isGameFinished ? handlePlayAgain : playGame}
-              disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
-            >
-              {isLoading
-                ? "Confirming…"
-                : isGameFinished
-                  ? "Play again"
-                  : dealerRevealed
-                    ? dealerArranged
-                      ? "In hand…"
-                      : "Flipping…"
-                    : "Play"}
-            </button>
-
-            {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
-
-          </div>
-          </div>
-        ) : null}
-
         <div className="pgLayout">
+          {!hideHeader ? (
+            <div className="rail">
+              <div className="brand">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
+                <div>
+                  <div className="title">Pai Gow</div>
+                  <div className="sub">dealer flips → arranges → player flips → split</div>
+                </div>
+              </div>
+              <div className="controls" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {/* Primary CTA: one-click hand. */}
+                <button
+                  className="btn"
+                  onClick={isGameFinished ? handlePlayAgain : playGame}
+                  disabled={isLoading || (!isGameFinished && dealerRevealed) || (!isGameFinished && !hasMainBet)}
+                >
+                  {isLoading
+                    ? "Confirming…"
+                    : isGameFinished
+                      ? "Play again"
+                      : dealerRevealed
+                        ? dealerArranged
+                          ? "In hand…"
+                          : "Flipping…"
+                        : "Play"}
+                </button>
+
+                {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}
+              </div>
+            </div>
+          ) : null}
+
           <div className="felt">
           <div className="zone dealerZone">
             <div className="zoneHeader">

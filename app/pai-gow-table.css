@@ -24,13 +24,36 @@
   .pgLayout{
     display: grid;
     grid-template-columns: 1fr 360px;
+    grid-template-rows: auto 1fr;
     gap: 14px;
     align-items: start;
   }
 
+  /* Place header art in the right sidebar so the main playfield has max width */
+  .rail{
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 320px;
+    background-position: 55% 46%;
+  }
+
+  .felt{
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+  }
+
   .betZone{
-    margin-top: 14px;
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
     height: fit-content;
+  }
+
+  .controls .btn{
+    padding: 12px 18px;
+    font-size: 15px;
+    border-radius: 14px;
   }
 
   .betLane{
