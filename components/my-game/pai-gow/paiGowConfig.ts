@@ -4,8 +4,8 @@ export const paiGow: Game = {
     title: "Pai Gow (Face Up)",
     description: "Face Up Pai Gow demo: dealer flips and arranges, player reveals and splits, then hands settle with optional side bets.",
     gameAddress: "0x0000000000000000000000000000000000000000",
-    // Use a 1x1 transparent background so we don't show an unwanted image or a black fill.
-    gameBackground: "/my-game/transparent.png",
+    // Use the provided game background to avoid a blank/black top area on mobile.
+    gameBackground: "/my-game/background.png",
     // animatedBackground: "/my-game/animated-background.mp4",
     card: "/my-game/card.png", // REQUIRED 1:1 aspect ratio
     banner: "/my-game/banner.png", // REQUIRED 2:1 aspect ratio
