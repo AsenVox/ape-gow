@@ -156,11 +156,16 @@
     padding-bottom: 14px;
   }
 
-  /* Desktop: move Play button down so it doesn't cover the instruction line.
+  /* Desktop: position header CTA for Pai Gow rail.
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 150px !important; /* down a bit */
-    right: 62px !important; /* left a bit */
+    top: 150px !important;
+    right: 62px !important;
+  }
+
+  /* Mobile/tablet: also apply the same positioning tweak. */
+  @media (max-width: 820px){
+    .controls{ top: 150px !important; right: 62px !important; }
   }
 
   .controls .btn{
