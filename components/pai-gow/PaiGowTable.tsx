@@ -688,7 +688,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                     ? dealerArranged
                       ? "In hand…"
                       : "Flipping…"
-                    : "Play"}
+                    : "Place bet"}
             </button>
 
             {/* Change bet removed (betting UI is already visible in setup; after results use modal reset). */}

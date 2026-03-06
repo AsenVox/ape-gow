@@ -160,6 +160,7 @@
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
     top: 140px !important;
+    right: 46px !important; /* move button left */
   }
 
   .controls .btn{
