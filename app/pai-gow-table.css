@@ -36,13 +36,14 @@
     grid-column: 1;
     margin-top: 0;
 
-    /* Make the left area behave like Ape.church games: a big square playfield */
+    /* Desktop: use the full available height (avoid the "black chunk" dead area).
+       Let the content define the vertical flow instead of forcing a square. */
     height: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: auto;
     max-height: 100%;
     width: 100%;
 
-    /* Desktop: allow the inside to scroll instead of hard-clipping split/results. */
+    /* Avoid clipping split/results; only scroll if absolutely needed. */
     overflow: auto;
   }
 
@@ -65,12 +66,15 @@
     margin-top: 0;
     /* top chunk of the sidebar */
     flex: 0 0 36%;
-    min-height: 240px;
+    min-height: 248px;
 
     /* Show the full banner art (no cropping of avatar/PAI GOW text) */
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center top;
+
+    /* Reduce padding so the art sits higher and doesn't feel "squeezed" */
+    padding-top: 10px;
 
     /* Sidebar box provides the border/radius */
     border: 0;
