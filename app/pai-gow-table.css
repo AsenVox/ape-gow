@@ -96,10 +96,11 @@
 
     /* Desktop: eliminate the dead bands above/below the banner by using cover.
        This may crop a few pixels, but preserves the template feel and removes empty gaps. */
-    /* Fit the banner horizontally (no side crop) while keeping vertical feel. */
-    background-size: 100% auto !important;
+    /* Desktop: use square banner art so it fits without horizontal cropping. */
+    background-image: url('/pai-gow/header-bg-square.jpg') !important;
+    background-size: contain !important;
     background-repeat: no-repeat !important;
-    background-position: center 42% !important;
+    background-position: center center !important;
 
     /* Tighten padding so the art reads as "flush" like Ape Church */
     padding: 10px 14px 12px !important;
