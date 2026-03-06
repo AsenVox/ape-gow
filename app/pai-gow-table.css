@@ -36,16 +36,22 @@
     grid-column: 1;
     margin-top: 0;
 
-    /* Desktop: use the full available height (avoid the "black chunk" dead area).
-       Let the content define the vertical flow instead of forcing a square. */
+    /* Desktop: use the full available height (avoid the "black chunk" dead area). */
     height: 100%;
     aspect-ratio: auto;
     max-height: 100%;
     width: 100%;
 
-    /* Avoid clipping split/results; only scroll if absolutely needed. */
-    overflow: auto;
+    /* Make the PLAYER zone consume the remaining vertical space immediately (no "drop down" feeling). */
+    display: flex;
+    flex-direction: column;
+
+    /* Keep the playfield stable; scroll inside the player zone only when needed. */
+    overflow: hidden;
   }
+
+  .dealerZone{ flex: 0 0 auto; }
+  .playerZone{ flex: 1 1 auto; overflow: auto; }
 
   /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
   /* Right panel: ONE bordered vertical rectangle (banner stacked on top of bets/chips) */
@@ -66,15 +72,16 @@
     margin-top: 0;
     /* top chunk of the sidebar */
     flex: 0 0 36%;
-    min-height: 248px;
+    min-height: 260px;
 
-    /* Show the full banner art (no cropping of avatar/PAI GOW text) */
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center top;
+    /* Show the full banner art (no cropping of avatar/PAI GOW text)
+       IMPORTANT: use !important because the base .rail styles appear later in this file. */
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center top !important;
 
     /* Reduce padding so the art sits higher and doesn't feel "squeezed" */
-    padding-top: 10px;
+    padding-top: 8px;
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -100,9 +107,10 @@
     padding-bottom: 14px;
   }
 
-  /* Desktop: move Play button down so it doesn't cover the instruction line. */
+  /* Desktop: move Play button down so it doesn't cover the instruction line.
+     IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 118px;
+    top: 132px !important;
   }
 
   .controls .btn{
