@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Howl } from "howler";
-import { Volume2, VolumeX, Music, AudioLines } from "lucide-react";
+import { Volume2, VolumeX, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameResultsModal from "./GameResultsModal";
 import { Game } from "@/lib/games";
@@ -15,6 +15,8 @@ type GameWindowProps = {
     isGameFinished: boolean;
     customHeightMobile?: string;
     children: React.ReactNode;
+
+    resultsExtra?: React.ReactNode;
 
     betAmount: number | null;
     payout: number | null;
@@ -44,6 +46,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
     isGameFinished,
     customHeightMobile,
     children,
+    resultsExtra,
 
     betAmount,
     payout,
@@ -76,14 +79,14 @@ const GameWindow: React.FC<GameWindowProps> = ({
             src: [game.song || fallbackSong],
             loop: true,
             volume: 0.5,
-            mute: muteMusic,
+            // NOTE: mute is controlled by the dedicated effect below.
+            mute: false,
         });
 
         audioRef.current = sound;
 
-        if (!muteMusic) {
-            sound.play();
-        }
+        // Start playback immediately; if music is muted, it will be muted by the effect below.
+        sound.play();
 
         return () => {
             sound.unload();
@@ -110,24 +113,36 @@ const GameWindow: React.FC<GameWindowProps> = ({
         onSfxMutedChange?.(muteSfx);
     }, [muteSfx, onSfxMutedChange]);
 
-    useEffect(() => {
-        if (isGameFinished && resultModalDelayMs > 0) {
-            const id = window.setTimeout(() => setShowResults(true), resultModalDelayMs);
-            return () => window.clearTimeout(id);
-        }
-        setShowResults(isGameFinished);
-    }, [isGameFinished, resultModalDelayMs]);
+    const resultsTimerRef = useRef<number | null>(null);
 
     useEffect(() => {
-        if (!isGameFinished) {
-            setShowResults(false);
+        // Avoid synchronous setState inside effects (lint rule). Always schedule.
+        if (resultsTimerRef.current !== null) {
+            window.clearTimeout(resultsTimerRef.current);
+            resultsTimerRef.current = null;
         }
-    }, [isGameFinished]);
+
+        const nextValue = !!isGameFinished;
+        const delay = nextValue ? Math.max(0, resultModalDelayMs) : 0;
+
+        resultsTimerRef.current = window.setTimeout(() => {
+            setShowResults(nextValue);
+        }, delay);
+
+        return () => {
+            if (resultsTimerRef.current !== null) {
+                window.clearTimeout(resultsTimerRef.current);
+                resultsTimerRef.current = null;
+            }
+        };
+    }, [isGameFinished, resultModalDelayMs]);
+
+    const isPaiGow = (game.title || "").toLowerCase().includes("pai gow");
 
     return (
         <div
             className={cn(
-                "lg:basis-2/3 w-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
+                "lg:basis-2/3 w-full h-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
             )}
         >
 
@@ -170,6 +185,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
                         showPlayAgainOption={!inReplayMode && isUserOriginalPlayer}
                         showRewatchOption={inReplayMode || isUserOriginalPlayer}
                         showPNL={showPNL}
+                        extraContent={resultsExtra}
                     />
                 )}
 
@@ -182,25 +198,39 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     playsInline
                     controls={false}
                     disablePictureInPicture={true}
-                    className="w-full h-full object-cover rounded-[8px] pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover rounded-[8px] pointer-events-none"
                 />
-            ) : (
+            ) : game.gameBackground && game.gameBackground !== "" ? (
                 <Image
                     src={game.gameBackground}
                     alt="Game Background"
                     width={719}
                     height={719}
-                    className="w-full h-full object-cover rounded-[8px] opacity-75"
+                    className={cn(
+                        "absolute inset-0 w-full h-full rounded-[8px] opacity-75",
+                        // Pai Gow background is a composed banner; use contain so it doesn't get cropped.
+                        game.gameBackground?.includes("/pai-gow/") ? "object-contain bg-black" : "object-cover",
+                    )}
                     style={{
                         minHeight: customHeightMobile ? customHeightMobile : "100%",
                     }}
                     priority
                 />
+            ) : (
+                <div className="absolute inset-0 w-full h-full rounded-[8px] bg-black/80" />
             )}
 
-            {children}
+            <div className="relative z-10 w-full h-full">
+                {children}
+            </div>
 
-            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+            <div
+                className={cn(
+                    "absolute bottom-4 z-30 flex items-center gap-2 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:flex-col",
+                    // Pai Gow uses a right-side betting sidebar; keep these controls off that edge.
+                    isPaiGow ? "left-4 right-auto" : "right-4",
+                )}
+            >
                 <Button
                     variant="ghost"
                     size="icon"

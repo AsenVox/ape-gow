@@ -1,0 +1,184 @@
+/* Poker-chip treatment (rack chips) */
+.chip{
+  /* defaults; overridden per denom via style vars */
+  --chipColor: #2a2a2a;
+  --chipStripe: rgba(235,240,244,0.95);
+
+  position: relative;
+  border-radius: 999px;
+  background:
+    /* base */
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.30)),
+    var(--chipColor);
+
+  box-shadow:
+    0 14px 22px rgba(0,0,0,0.55),
+    inset 0 2px 0 rgba(255,255,255,0.22),
+    inset 0 -12px 16px rgba(0,0,0,0.42);
+}
+
+/* edge stripes ring */
+.chip::before{
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--chipStripe) 0deg 12deg,
+      rgba(255,255,255,0) 12deg 32deg,
+      var(--chipStripe) 32deg 44deg,
+      rgba(255,255,255,0) 44deg 74deg,
+      var(--chipStripe) 74deg 86deg,
+      rgba(255,255,255,0) 86deg 116deg,
+      var(--chipStripe) 116deg 128deg,
+      rgba(255,255,255,0) 128deg 158deg,
+      var(--chipStripe) 158deg 170deg,
+      rgba(255,255,255,0) 170deg 200deg,
+      var(--chipStripe) 200deg 212deg,
+      rgba(255,255,255,0) 212deg 242deg,
+      var(--chipStripe) 242deg 254deg,
+      rgba(255,255,255,0) 254deg 284deg,
+      var(--chipStripe) 284deg 296deg,
+      rgba(255,255,255,0) 296deg 326deg,
+      var(--chipStripe) 326deg 338deg,
+      rgba(255,255,255,0) 338deg 360deg
+    );
+
+  /* punch out the center so only the rim shows */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* center label ring */
+.chip::after{
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 40% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(0,0,0,0.25)),
+    rgba(10,10,10,0.18);
+  border: 2px solid rgba(255,255,255,0.14);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.18),
+    inset 0 -10px 14px rgba(0,0,0,0.35);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.chipActive{
+  transform: translateY(-1px);
+  box-shadow:
+    0 18px 26px rgba(0,0,0,0.60),
+    0 0 0 2px rgba(140,255,0,0.18),
+    inset 0 2px 0 rgba(255,255,255,0.24),
+    inset 0 -10px 14px rgba(0,0,0,0.35);
+}
+
+/* ---------------------------
+   Chip stacks on bet spots
+   --------------------------- */
+.chipStack{
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  width: 54px;
+  height: 74px;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.55));
+}
+
+.stackChip{
+  /* match rack poker-chip look */
+  --chipStripe: rgba(235,240,244,0.95);
+
+  position: absolute;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.30)),
+    var(--chipColor, #2a2a2a);
+  border: 2px solid rgba(0,0,0,0.45);
+
+  box-shadow:
+    0 10px 16px rgba(0,0,0,0.58),
+    inset 0 2px 0 rgba(255,255,255,0.22),
+    inset 0 -12px 16px rgba(0,0,0,0.44);
+
+  opacity: 1;
+  will-change: transform;
+
+  display: grid;
+  place-items: center;
+  color: rgba(250,250,250,0.96);
+  font-weight: 950;
+  font-size: 13px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+}
+
+/* rim stripes */
+.stackChip::before{
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--chipStripe) 0deg 12deg,
+      rgba(255,255,255,0) 12deg 32deg,
+      var(--chipStripe) 32deg 44deg,
+      rgba(255,255,255,0) 44deg 74deg,
+      var(--chipStripe) 74deg 86deg,
+      rgba(255,255,255,0) 86deg 116deg,
+      var(--chipStripe) 116deg 128deg,
+      rgba(255,255,255,0) 128deg 158deg,
+      var(--chipStripe) 158deg 170deg,
+      rgba(255,255,255,0) 170deg 200deg,
+      var(--chipStripe) 200deg 212deg,
+      rgba(255,255,255,0) 212deg 242deg,
+      var(--chipStripe) 242deg 254deg,
+      rgba(255,255,255,0) 254deg 284deg,
+      var(--chipStripe) 284deg 296deg,
+      rgba(255,255,255,0) 296deg 326deg,
+      var(--chipStripe) 326deg 338deg,
+      rgba(255,255,255,0) 338deg 360deg
+    );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* inner label */
+.stackChip::after{
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 40% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(0,0,0,0.25)),
+    rgba(10,10,10,0.18);
+  border: 2px solid rgba(255,255,255,0.14);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* color by denomination */
+.stackChip.chipV1{ --chipColor: #2a2a2a; }
+.stackChip.chipV5{ --chipColor: #1e4a86; }
+.stackChip.chipV10{ --chipColor: #9a6a10; }
+.stackChip.chipV25{ --chipColor: #2d7a21; }
+.stackChip.chipV100{ --chipColor: #3a3a3a; }

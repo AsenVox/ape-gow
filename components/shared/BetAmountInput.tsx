@@ -44,9 +44,10 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
 
     useEffect(() => {
         if (parseFloat(inputValue) !== value) {
-            setInputValue(String(value));
+            const t = window.setTimeout(() => setInputValue(String(value)), 0);
+            return () => window.clearTimeout(t);
         }
-    }, [value]);
+    }, [value, inputValue]);
 
     useEffect(() => {
         if (disabled) {
@@ -56,7 +57,8 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
         // clamp the bet amount to the new maximum. This handles cases like switching
         // from a higher value currency (APE) to a lower one (USD).
         if (value > max) {
-            handleValueChange(max);
+            const t = window.setTimeout(() => handleValueChange(max), 0);
+            return () => window.clearTimeout(t);
         }
     }, [max, value, handleValueChange, disabled]);
 

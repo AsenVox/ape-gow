@@ -8,13 +8,14 @@ import { X, Maximize2, Minimize2 } from "lucide-react";
 
 type GameResultsModalProps = {
     isOpen: boolean;
+    extraContent?: React.ReactNode;
     onClose?: () => void;
     payout: number;
     betAmount: number;
     usdMode: boolean;
     apePrice: number;
     isLoading: boolean;
-    gameTitle?: string
+    gameTitle?: string;
 
     onReset: () => void;
     onPlayAgain: () => void;
@@ -45,7 +46,11 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
     resetButtonText = "Change Bet",
     playAgainButtonText = "Play Again",
     rewatchButtonText = "Rewatch",
+    extraContent,
 }) => {
+    void betAmount;
+    void gameTitle;
+
     const [minimizeResultsModal, setMinimizeResultsModal] = useState(false);
     const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
@@ -84,21 +89,20 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
     // Respect user's minimize preference - don't force it to expand if they want it minimized
     useEffect(() => {
         if (isOpen && !hasAnimatedIn) {
-            setHasAnimatedIn(true);
-            // Don't force setMinimizeResultsModal(false) - respect the user's preference
-            // If they minimized it before, it should stay minimized for subsequent games
+            const t = window.setTimeout(() => setHasAnimatedIn(true), 0);
+            return () => window.clearTimeout(t);
         }
     }, [isOpen, hasAnimatedIn]);
 
     // Reset animation state when modal closes
     useEffect(() => {
         if (!isOpen) {
-            setHasAnimatedIn(false);
+            const t = window.setTimeout(() => setHasAnimatedIn(false), 0);
+            return () => window.clearTimeout(t);
         }
     }, [isOpen]);
 
     const isWin = payout > 0;
-    const isProfitableWin = payout > betAmount && payout > 1;
     const displayPayout = usdMode
         ? `$${(payout * apePrice).toLocaleString([], {
             minimumFractionDigits: 2,
@@ -333,6 +337,12 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
                                                 </p>
                                             </motion.div>
                                         )}
+
+                                        {extraContent ? (
+                                            <div className="w-full mt-1">
+                                                {extraContent}
+                                            </div>
+                                        ) : null}
 
                                         {/* Buttons */}
                                         <motion.div
