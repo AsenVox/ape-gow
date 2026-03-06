@@ -917,9 +917,17 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                 }}
                 disabled={betsLocked || (mainChips.length === 0 && sideChips.length === 0 && pushChips.length === 0)}
                 title="Clear all bets"
-                style={{ position: "absolute", right: 10, bottom: 10, padding: "8px 10px", borderRadius: 12, zIndex: 6 }}
+                style={{
+                  position: "absolute",
+                  right: -72,
+                  bottom: 10,
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  zIndex: 6,
+                  whiteSpace: "nowrap",
+                }}
               >
-                Clear
+                Clear bets
               </button>
             ) : null}
 
