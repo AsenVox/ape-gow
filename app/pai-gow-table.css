@@ -19,8 +19,9 @@
 .pgShell{ height: auto; }
 @media (min-width: 700px){
   .pgShell{
-    /* Keep it "template sized" and stable. */
-    height: min(720px, calc(100vh - 160px));
+    /* Desktop: lock height so the outer window never grows when bets change,
+       but keep it tall enough that nothing gets clipped. */
+    height: clamp(660px, calc(100vh - 96px), 920px);
     overflow: hidden;
   }
 
@@ -86,17 +87,17 @@
   .rail{
     margin-top: 0;
     /* top chunk of the sidebar */
-    flex: 0 0 24%;
-    min-height: 175px;
+    flex: 0 0 28%;
+    min-height: 210px;
 
-    /* Show the full banner art (no cropping of avatar/PAI GOW text)
-       IMPORTANT: use !important because the base .rail styles appear later in this file. */
-    background-size: contain !important;
+    /* Desktop: eliminate the dead bands above/below the banner by using cover.
+       This may crop a few pixels, but preserves the template feel and removes empty gaps. */
+    background-size: cover !important;
     background-repeat: no-repeat !important;
-    background-position: center top !important;
+    background-position: 40% 45% !important;
 
-    /* No extra inset on desktop; keeps the art flush and removes the perceived top gap */
-    padding-top: 0;
+    /* Tighten padding so the art reads as "flush" like Ape Church */
+    padding: 10px 14px 12px !important;
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -106,6 +107,7 @@
 
   .betZone{
     margin-top: 0;
+    padding-top: 8px; /* pulls BETS section upward to reduce the gap under the banner */
 
     /* Sidebar box provides the border/radius */
     border: 0;
