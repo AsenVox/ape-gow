@@ -50,9 +50,10 @@
     overflow: hidden;
   }
 
-  /* Desktop: keep DEALER and PLAYER zones equal height (stable layout; no "drop" when state changes). */
-  .dealerZone,
-  .playerZone{ flex: 1 1 0; min-height: 0; overflow: auto; }
+  /* Desktop: give PLAYER a bit more height so post-draw split/results never clip.
+     Keep layout stable (no reflow/jump). */
+  .dealerZone{ flex: 0 0 44%; min-height: 0; overflow: auto; }
+  .playerZone{ flex: 1 1 56%; min-height: 0; overflow: auto; }
 
   /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
   /* Right panel: ONE bordered vertical rectangle (banner stacked on top of bets/chips) */
