@@ -159,8 +159,8 @@
   /* Desktop: move Play button down so it doesn't cover the instruction line.
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 140px !important;
-    right: 46px !important; /* move button left */
+    top: 150px !important; /* down a bit */
+    right: 62px !important; /* left a bit */
   }
 
   .controls .btn{
