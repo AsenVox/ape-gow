@@ -899,6 +899,30 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               </button>
             ) : null}
 
+            {/* Mobile convenience: clear all bets at once (before Play). Place near MAIN bet. */}
+            {!desktopLayout ? (
+              <button
+                type="button"
+                className="btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (betsLocked) return;
+                  setMain(0);
+                  setSide(0);
+                  setPush(0);
+                  setMainChips([]);
+                  setSideChips([]);
+                  setPushChips([]);
+                }}
+                disabled={betsLocked || (mainChips.length === 0 && sideChips.length === 0 && pushChips.length === 0)}
+                title="Clear all bets"
+                style={{ position: "absolute", right: 10, bottom: 10, padding: "8px 10px", borderRadius: 12, zIndex: 6 }}
+              >
+                Clear
+              </button>
+            ) : null}
+
             <div className="betContent">
               <div className="betName">MAIN</div>
               <div className="betValue" style={{ marginTop: 6, fontWeight: 900, fontSize: 18 }}>{main}</div>
@@ -906,7 +930,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </button>
         </div>
 
-        <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}>
+        <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
           <div className="chipRack">
             {chipValues.map((v) => (
               <button
@@ -921,28 +945,6 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               </button>
             ))}
           </div>
-
-          {/* Mobile convenience: clear all bets at once (before Play). */}
-          {!desktopLayout ? (
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                if (betsLocked) return;
-                setMain(0);
-                setSide(0);
-                setPush(0);
-                setMainChips([]);
-                setSideChips([]);
-                setPushChips([]);
-              }}
-              disabled={betsLocked || (mainChips.length === 0 && sideChips.length === 0 && pushChips.length === 0)}
-              title="Clear all bets"
-              style={{ padding: "10px 12px", borderRadius: 12 }}
-            >
-              Clear
-            </button>
-          ) : null}
         </div>
       </div>
     </div>
