@@ -998,7 +998,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                         ? dealerArranged
                           ? "In hand…"
                           : "Flipping…"
-                        : "Play"}
+                        : "Place bet"}
                 </button>
               </div>
             </div>
