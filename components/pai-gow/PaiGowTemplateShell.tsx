@@ -12,36 +12,36 @@ function BreakdownExtra({ status }: { status: PaiGowTableStatus | null }) {
 
   const fmt = (n: number) => (Number.isFinite(n) ? n.toString() : "0");
 
+  // IMPORTANT: render INSIDE the template modal (extraContent), not as a fixed overlay.
+  // The previous overlay style covered the main payout text (e.g. "640 APE").
   return (
-    <div className="pgBreakdownOverlay">
-      <div className="pgBreakdownCard" aria-label="Pai Gow breakdown">
-        <div className="pgBreakdownTitle">RESULT BREAKDOWN</div>
-        <div className="pgBreakdownGrid">
-          <div className="pgLine">
-            <div>MAIN</div>
-            <div className="pgWager">{fmt(b.main.wager)}</div>
-            <div className={b.main.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.main.payout)}</div>
-          </div>
-          <div className="pgLine">
-            <div>BONUS</div>
-            <div className="pgWager">{fmt(b.bonus.wager)}</div>
-            <div className={b.bonus.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.bonus.payout)}</div>
-          </div>
-          <div className="pgLine">
-            <div>PUSH</div>
-            <div className="pgWager">{fmt(b.push.wager)}</div>
-            <div className={b.push.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.push.payout)}</div>
-          </div>
-          <div className="pgLine pgNet">
-            <div>NET</div>
-            <div className="pgWager">{fmt(b.totalWager)}</div>
-            <div className={(status?.payout ?? 0) >= 0 ? "pgPos" : "pgNeg"}>{fmt(status?.payout ?? 0)}</div>
-          </div>
+    <div className="pgBreakdownCard" aria-label="Pai Gow breakdown" style={{ position: "static", transform: "none" }}>
+      <div className="pgBreakdownTitle">BREAKDOWN</div>
+      <div className="pgBreakdownGrid">
+        <div className="pgLine">
+          <div>Main bet</div>
+          <div className="pgWager">{fmt(b.main.wager)}</div>
+          <div className={b.main.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.main.payout)}</div>
         </div>
-        <div className="pgBreakdownFine">
-          {b.outcome ? `Outcome: ${b.outcome}` : ""}
-          {b.dealerAceHighPaiGow ? " • Dealer Ace High Pai Gow" : ""}
+        <div className="pgLine">
+          <div>Bonus bet</div>
+          <div className="pgWager">{fmt(b.bonus.wager)}</div>
+          <div className={b.bonus.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.bonus.payout)}</div>
         </div>
+        <div className="pgLine">
+          <div>Push bet</div>
+          <div className="pgWager">{fmt(b.push.wager)}</div>
+          <div className={b.push.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.push.payout)}</div>
+        </div>
+        <div className="pgLine pgNet">
+          <div>Net payout</div>
+          <div className="pgWager">{fmt(b.totalWager)}</div>
+          <div className={(status?.payout ?? 0) >= 0 ? "pgPos" : "pgNeg"}>{fmt(status?.payout ?? 0)}</div>
+        </div>
+      </div>
+      <div className="pgBreakdownFine">
+        {b.outcome ? `Outcome: ${b.outcome}` : ""}
+        {b.dealerAceHighPaiGow ? " • Dealer Ace High Pai Gow" : ""}
       </div>
     </div>
   );
