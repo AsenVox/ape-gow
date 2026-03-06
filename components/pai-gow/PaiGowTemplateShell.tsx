@@ -83,7 +83,7 @@ export default function PaiGowTemplateShell() {
       isGameFinished={!!status?.isGameFinished}
       betAmount={betAmount}
       payout={payout}
-      inReplayMode={true}
+      inReplayMode={false}
       isUserOriginalPlayer={true}
       showPNL={false}
       onReset={onReset}
