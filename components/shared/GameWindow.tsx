@@ -137,6 +137,8 @@ const GameWindow: React.FC<GameWindowProps> = ({
         };
     }, [isGameFinished, resultModalDelayMs]);
 
+    const isPaiGow = (game.title || "").toLowerCase().includes("pai gow");
+
     return (
         <div
             className={cn(
@@ -222,7 +224,13 @@ const GameWindow: React.FC<GameWindowProps> = ({
                 {children}
             </div>
 
-            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:flex-col">
+            <div
+                className={cn(
+                    "absolute bottom-4 z-30 flex items-center gap-2 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:flex-col",
+                    // Pai Gow uses a right-side betting sidebar; keep these controls off that edge.
+                    isPaiGow ? "left-4 right-auto" : "right-4",
+                )}
+            >
                 <Button
                     variant="ghost"
                     size="icon"

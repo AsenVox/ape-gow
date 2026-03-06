@@ -41,7 +41,9 @@
     aspect-ratio: 1 / 1;
     max-height: 100%;
     width: 100%;
-    overflow: hidden;
+
+    /* Desktop: allow the inside to scroll instead of hard-clipping split/results. */
+    overflow: auto;
   }
 
   /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
@@ -62,9 +64,13 @@
   .rail{
     margin-top: 0;
     /* top chunk of the sidebar */
-    flex: 0 0 38%;
-    min-height: 220px;
-    background-position: 55% 46%;
+    flex: 0 0 36%;
+    min-height: 240px;
+
+    /* Show the full banner art (no cropping of avatar/PAI GOW text) */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -85,6 +91,14 @@
     min-height: 0;
     overflow: auto;
     background: transparent;
+
+    /* Keep chip rack from getting clipped by the sidebar radius */
+    padding-bottom: 14px;
+  }
+
+  /* Desktop: move Play button down so it doesn't cover the instruction line. */
+  .controls{
+    top: 118px;
   }
 
   .controls .btn{
