@@ -665,6 +665,10 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               : undefined
           }
         >
+          {/* Desktop: render the banner art as an <img> so it fills the rail without letterboxing. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="pgRailArt" src="/pai-gow/header-bg.jpg" alt="Pai Gow" />
+
           <div className="brand">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={acLogo} alt="ApeChurch" style={{ height: 26, opacity: 0.95 }} />
