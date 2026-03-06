@@ -906,7 +906,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
           </button>
         </div>
 
-        <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
+        <div className="betFooterRow" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}>
           <div className="chipRack">
             {chipValues.map((v) => (
               <button
@@ -921,6 +921,28 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               </button>
             ))}
           </div>
+
+          {/* Mobile convenience: clear all bets at once (before Play). */}
+          {!desktopLayout ? (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                if (betsLocked) return;
+                setMain(0);
+                setSide(0);
+                setPush(0);
+                setMainChips([]);
+                setSideChips([]);
+                setPushChips([]);
+              }}
+              disabled={betsLocked || (mainChips.length === 0 && sideChips.length === 0 && pushChips.length === 0)}
+              title="Clear all bets"
+              style={{ padding: "10px 12px", borderRadius: 12 }}
+            >
+              Clear
+            </button>
+          ) : null}
         </div>
       </div>
     </div>
