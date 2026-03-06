@@ -50,8 +50,9 @@
     overflow: hidden;
   }
 
-  .dealerZone{ flex: 0 0 auto; }
-  .playerZone{ flex: 1 1 auto; overflow: auto; }
+  /* Desktop: keep DEALER and PLAYER zones equal height (stable layout; no "drop" when state changes). */
+  .dealerZone,
+  .playerZone{ flex: 1 1 0; min-height: 0; overflow: auto; }
 
   /* Sidebar on the RIGHT: separate vertical rectangle (image on top, bets below) */
   /* Right panel: ONE bordered vertical rectangle (banner stacked on top of bets/chips) */
@@ -71,8 +72,8 @@
   .rail{
     margin-top: 0;
     /* top chunk of the sidebar */
-    flex: 0 0 36%;
-    min-height: 260px;
+    flex: 0 0 30%;
+    min-height: 210px;
 
     /* Show the full banner art (no cropping of avatar/PAI GOW text)
        IMPORTANT: use !important because the base .rail styles appear later in this file. */
@@ -80,8 +81,8 @@
     background-repeat: no-repeat !important;
     background-position: center top !important;
 
-    /* Reduce padding so the art sits higher and doesn't feel "squeezed" */
-    padding-top: 8px;
+    /* No extra inset on desktop; keeps the art flush and removes the perceived top gap */
+    padding-top: 0;
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -110,7 +111,7 @@
   /* Desktop: move Play button down so it doesn't cover the instruction line.
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 132px !important;
+    top: 156px !important;
   }
 
   .controls .btn{
