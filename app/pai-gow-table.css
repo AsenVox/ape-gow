@@ -87,9 +87,32 @@
   }
 
   /* Template rule: the outer window never grows.
-     So the sidebar must be a fixed header (banner) + a scrollable bets body. */
+     So the sidebar must be a fixed header (banner) + a scrollable bets body.
+     Also keep the CHIP RACK always visible (sticky footer). */
   .rail{ flex: 0 0 190px; min-height: 190px; }
-  .betZone{ flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+  .betZone{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden; /* internal sections handle scroll */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .betLane{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .betFooterRow{
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    padding-bottom: 10px;
+  }
 
   .rail{
     margin-top: 0;
