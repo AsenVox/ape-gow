@@ -21,7 +21,11 @@
   .pgShell{
     /* Keep it "template sized" and stable. */
     height: min(720px, calc(100vh - 160px));
+    overflow: hidden;
   }
+
+  /* Force GameWindow to fill the locked shell height (prevents growth when bets update). */
+  .pgShell > *{ height: 100%; }
 }
 
 .pgLayout{
