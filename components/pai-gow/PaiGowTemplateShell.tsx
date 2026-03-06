@@ -24,12 +24,26 @@ function BreakdownExtra({ status }: { status: PaiGowTableStatus | null }) {
           <div className={b.main.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.main.payout)}</div>
         </div>
         <div className="pgLine">
-          <div>Bonus bet</div>
+          <div>
+            Bonus bet
+            {b.bonus.hit ? (
+              <span className="pgWager" style={{ display: "block", fontSize: 10, opacity: 0.75 }}>
+                Hit: {b.bonus.hit.name} (x{b.bonus.hit.multiplier})
+              </span>
+            ) : null}
+          </div>
           <div className="pgWager">{fmt(b.bonus.wager)}</div>
           <div className={b.bonus.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.bonus.payout)}</div>
         </div>
         <div className="pgLine">
-          <div>Push bet</div>
+          <div>
+            Push bet
+            {b.push.hit ? (
+              <span className="pgWager" style={{ display: "block", fontSize: 10, opacity: 0.75 }}>
+                Hit: {b.push.hit.name} (x{b.push.hit.multiplier})
+              </span>
+            ) : null}
+          </div>
           <div className="pgWager">{fmt(b.push.wager)}</div>
           <div className={b.push.payout >= 0 ? "pgPos" : "pgNeg"}>{fmt(b.push.payout)}</div>
         </div>
