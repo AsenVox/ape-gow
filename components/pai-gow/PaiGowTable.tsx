@@ -919,7 +919,7 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
                 title="Clear all bets"
                 style={{
                   position: "absolute",
-                  right: -110,
+                  right: -140,
                   bottom: 10,
                   padding: "8px 10px",
                   borderRadius: 12,
