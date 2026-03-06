@@ -1,7 +1,7 @@
 import "./pai-gow-table.css";
 
 import { paiGow } from "@/components/pai-gow/paiGowConfig";
-import PaiGowGame from "@/components/pai-gow/PaiGowGame";
+import PaiGowTemplateShell from "@/components/pai-gow/PaiGowTemplateShell";
 
 export async function generateMetadata() {
   return {
@@ -16,7 +16,7 @@ const PaiGowPage: React.FC = () => {
       <div className="flex flex-row mb-2 sm:mb-4">
         <h1 className="text-3xl font-semibold mr-2">{paiGow.title}</h1>
       </div>
-      <PaiGowGame />
+      <PaiGowTemplateShell />
     </div>
   );
 };
