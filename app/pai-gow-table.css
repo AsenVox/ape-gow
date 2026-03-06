@@ -94,25 +94,13 @@
   .betZone{
     flex: 1 1 auto;
     min-height: 0;
-    overflow: hidden; /* internal sections handle scroll */
-    display: flex;
-    flex-direction: column;
+    overflow: auto; /* entire bets area scrolls (chip rack included) */
+    display: block;
   }
 
-  .betLane{
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-  }
-
-  .betFooterRow{
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(8px);
-    padding-bottom: 10px;
-  }
+  /* Desktop: keep chip rack in normal flow so it can't be clipped.
+     (Sticky inside overflow contexts is unreliable across browsers.) */
+  .betFooterRow{ position: relative; bottom: auto; }
 
   .rail{
     margin-top: 0;
