@@ -15,6 +15,15 @@
   position: relative; /* so overlays anchor correctly */
 }
 
+/* Template shell wrapper (GameWindow). Desktop must not grow when bets change. */
+.pgShell{ height: auto; }
+@media (min-width: 700px){
+  .pgShell{
+    /* Keep it "template sized" and stable. */
+    height: min(720px, calc(100vh - 160px));
+  }
+}
+
 .pgLayout{
   display: block;
   height: 100%;
@@ -73,8 +82,8 @@
   .rail{
     margin-top: 0;
     /* top chunk of the sidebar */
-    flex: 0 0 30%;
-    min-height: 210px;
+    flex: 0 0 24%;
+    min-height: 175px;
 
     /* Show the full banner art (no cropping of avatar/PAI GOW text)
        IMPORTANT: use !important because the base .rail styles appear later in this file. */

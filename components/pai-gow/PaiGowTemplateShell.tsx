@@ -91,7 +91,8 @@ export default function PaiGowTemplateShell() {
   const resultsExtra = useMemo(() => <BreakdownExtra status={status} />, [status]);
 
   return (
-    <GameWindow
+    <div className="pgShell">
+      <GameWindow
       game={paiGow}
       isLoading={!!status?.isLoading}
       isGameFinished={!!status?.isGameFinished}
@@ -110,7 +111,8 @@ export default function PaiGowTemplateShell() {
       disableBuiltInSong={true}
       resultsExtra={resultsExtra}
     >
-      <PaiGowTable ref={tableRef} onStatusChange={onStatusChange} />
-    </GameWindow>
+        <PaiGowTable ref={tableRef} onStatusChange={onStatusChange} />
+      </GameWindow>
+    </div>
   );
 }
