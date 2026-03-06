@@ -84,6 +84,11 @@
     box-shadow: 0 18px 60px rgba(0,0,0,0.55);
   }
 
+  /* Template rule: the outer window never grows.
+     So the sidebar must be a fixed header (banner) + a scrollable bets body. */
+  .rail{ flex: 0 0 190px; min-height: 190px; }
+  .betZone{ flex: 1 1 auto; min-height: 0; overflow: auto; }
+
   .rail{
     margin-top: 0;
     /* top chunk of the sidebar */
@@ -110,6 +115,7 @@
   .betZone{
     margin-top: 0;
     padding-top: 0; /* no dead band between banner and BETS */
+    padding-bottom: 14px; /* keep chip rack from colliding with rounded border */
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -129,7 +135,7 @@
   /* Desktop: move Play button down so it doesn't cover the instruction line.
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 148px !important;
+    top: 140px !important;
   }
 
   .controls .btn{
