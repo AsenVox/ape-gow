@@ -94,13 +94,24 @@
   .betZone{
     flex: 1 1 auto;
     min-height: 0;
-    overflow: auto; /* entire bets area scrolls (chip rack included) */
-    display: block;
+
+    /* Make the bets panel the scroll container so we can sticky-pin the chip rack. */
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Desktop: keep chip rack in normal flow so it can't be clipped.
-     (Sticky inside overflow contexts is unreliable across browsers.) */
-  .betFooterRow{ position: relative; bottom: auto; }
+  .betLane{ flex: 1 1 auto; }
+
+  /* Desktop: keep the chip rack always visible at the bottom of the sidebar. */
+  .betFooterRow{
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(10px);
+    padding: 8px 0 10px;
+  }
 
   .rail{
     margin-top: 0;
@@ -161,7 +172,7 @@
     justify-content: flex-start;
     flex-direction: column;
     align-items: stretch;
-    padding-top: 14px;
+    padding-top: 10px;
   }
 
   .betSpot,
@@ -169,10 +180,10 @@
   .betSpotBonus,
   .betSpotPush{
     width: 100% !important;
-    height: 92px;
+    height: 78px;
   }
 
-  .betSpotMain{ height: 104px; }
+  .betSpotMain{ height: 90px; }
 }
 
 /* Results breakdown overlay shown alongside the template win/lose modal */
@@ -557,8 +568,8 @@
 }
 
 .chip{
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 2px solid rgba(215,225,230,0.22);
   background: rgba(20,20,20,0.85);
