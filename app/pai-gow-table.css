@@ -19,10 +19,12 @@
 .pgShell{ height: auto; }
 @media (min-width: 700px){
   .pgShell{
-    /* Desktop: match the template "square" size. Never grow/shrink when bets change. */
+    /* Desktop: match the template window size. Never grow/shrink when bets change.
+       IMPORTANT: do NOT hide overflow here; if the user’s viewport is shorter, the page should scroll.
+       The window stays fixed-size; the page can scroll to reveal it. */
     height: 660px;
     max-height: 660px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   /* Force GameWindow to fill the locked shell height (prevents growth when bets update). */
