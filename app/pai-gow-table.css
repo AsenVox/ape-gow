@@ -19,14 +19,11 @@
 .pgShell{ height: auto; }
 @media (min-width: 700px){
   .pgShell{
-    /* Desktop: lock height so the outer window never grows when bets change,
-       but keep it tall enough that nothing gets clipped. */
-    height: clamp(660px, calc(100vh - 96px), 920px);
-    max-height: clamp(660px, calc(100vh - 96px), 920px);
+    /* Desktop: lock height to the viewport so the outer window never grows when bets change,
+       and so the page doesn't leave a big dead area underneath. */
+    height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
     overflow: hidden;
-
-    /* Prevent child layout changes from affecting outer flow (stops "drop"/reflow). */
-    contain: layout size;
   }
 
   /* Force GameWindow to fill the locked shell height (prevents growth when bets update). */
@@ -96,14 +93,14 @@
 
     /* Desktop: eliminate the dead bands above/below the banner by using cover.
        This may crop a few pixels, but preserves the template feel and removes empty gaps. */
-    /* Desktop: use square banner art so it fits without horizontal cropping. */
+    /* Desktop: use square banner art and FILL the rail (no letterbox). */
     background-image: url('/pai-gow/header-bg-square.jpg') !important;
-    background-size: contain !important;
+    background-size: cover !important;
     background-repeat: no-repeat !important;
-    background-position: center center !important;
+    background-position: center 40% !important;
 
     /* Tighten padding so the art reads as "flush" like Ape Church */
-    padding: 10px 14px 12px !important;
+    padding: 0 !important;
 
     /* Sidebar box provides the border/radius */
     border: 0;
@@ -113,7 +110,7 @@
 
   .betZone{
     margin-top: 0;
-    padding-top: 8px; /* pulls BETS section upward to reduce the gap under the banner */
+    padding-top: 0; /* no dead band between banner and BETS */
 
     /* Sidebar box provides the border/radius */
     border: 0;
