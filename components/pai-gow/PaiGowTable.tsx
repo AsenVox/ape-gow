@@ -1053,39 +1053,80 @@ const PaiGowTable = forwardRef<PaiGowTableHandle, PaiGowTableProps>(function Pai
               </div>
             </div>
 
-            <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
-              <div>
-                <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>LOW (2)</div>
-                <div className="cardsRow">
-                  {lowIdx.map((i) => (
-                    <CardFace key={i} card={view.player7[i]} tone="low" onClick={() => removeFromLow(i)} />
-                  ))}
+            {/* Desktop: keep the square stable by laying SPLIT + RESULT side-by-side. */}
+            {desktopLayout ? (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 12, marginTop: 10, alignItems: "start" }}>
+                <div style={{ display: "grid", gap: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>LOW (2)</div>
+                    <div className="cardsRow">
+                      {lowIdx.map((i) => (
+                        <CardFace key={i} card={view.player7[i]} tone="low" onClick={() => removeFromLow(i)} />
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>HIGH (5)</div>
+                    <div className="cardsRow">
+                      {highIdx.map((i) => (
+                        <CardFace key={i} card={view.player7[i]} tone="high" onClick={() => removeFromHigh(i)} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>HIGH (5)</div>
-                <div className="cardsRow">
-                  {highIdx.map((i) => (
-                    <CardFace key={i} card={view.player7[i]} tone="high" onClick={() => removeFromHigh(i)} />
-                  ))}
-                </div>
-              </div>
-            </div>
 
-            <div style={{ marginTop: 14, padding: 16, borderRadius: 16, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(20,20,20,0.82)" }}>
-              <div style={{ fontWeight: 900, marginBottom: 8 }}>RESULT</div>
-              {view.res ? (
-                <div style={{ display: "grid", gap: 6 }}>
-                  <div>Outcome: <strong>{view.res.outcome}</strong></div>
-                  <div>Main payout: <strong>{mainPayout}</strong></div>
-                  <div>Bonus payout: <strong>{bonusPayout}</strong></div>
-                  <div>Push payout: <strong>{pushPayout}</strong></div>
-                  <div>Net payout: <strong>{netPayout}</strong></div>
+                <div style={{ padding: 14, borderRadius: 16, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(20,20,20,0.82)" }}>
+                  <div style={{ fontWeight: 900, marginBottom: 8 }}>RESULT</div>
+                  {view.res ? (
+                    <div style={{ display: "grid", gap: 6 }}>
+                      <div>Outcome: <strong>{view.res.outcome}</strong></div>
+                      <div>Main payout: <strong>{mainPayout}</strong></div>
+                      <div>Bonus payout: <strong>{bonusPayout}</strong></div>
+                      <div>Push payout: <strong>{pushPayout}</strong></div>
+                      <div>Net payout: <strong>{netPayout}</strong></div>
+                    </div>
+                  ) : (
+                    <div style={{ opacity: 0.8 }}>{view.validation.reason ?? "Make a valid split to see the outcome."}</div>
+                  )}
                 </div>
-              ) : (
-                <div style={{ opacity: 0.8 }}>{view.validation.reason ?? "Make a valid split to see the outcome."}</div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>LOW (2)</div>
+                    <div className="cardsRow">
+                      {lowIdx.map((i) => (
+                        <CardFace key={i} card={view.player7[i]} tone="low" onClick={() => removeFromLow(i)} />
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 900, opacity: 0.85, letterSpacing: 0.6, fontSize: 12, marginBottom: 8 }}>HIGH (5)</div>
+                    <div className="cardsRow">
+                      {highIdx.map((i) => (
+                        <CardFace key={i} card={view.player7[i]} tone="high" onClick={() => removeFromHigh(i)} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 14, padding: 16, borderRadius: 16, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(20,20,20,0.82)" }}>
+                  <div style={{ fontWeight: 900, marginBottom: 8 }}>RESULT</div>
+                  {view.res ? (
+                    <div style={{ display: "grid", gap: 6 }}>
+                      <div>Outcome: <strong>{view.res.outcome}</strong></div>
+                      <div>Main payout: <strong>{mainPayout}</strong></div>
+                      <div>Bonus payout: <strong>{bonusPayout}</strong></div>
+                      <div>Push payout: <strong>{pushPayout}</strong></div>
+                      <div>Net payout: <strong>{netPayout}</strong></div>
+                    </div>
+                  ) : (
+                    <div style={{ opacity: 0.8 }}>{view.validation.reason ?? "Make a valid split to see the outcome."}</div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
