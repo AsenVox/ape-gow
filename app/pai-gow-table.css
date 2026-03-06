@@ -19,10 +19,9 @@
 .pgShell{ height: auto; }
 @media (min-width: 700px){
   .pgShell{
-    /* Desktop: lock height to the viewport so the outer window never grows when bets change,
-       and so the page doesn't leave a big dead area underneath. */
-    height: calc(100vh - 140px);
-    max-height: calc(100vh - 140px);
+    /* Desktop: match the template "square" size. Never grow/shrink when bets change. */
+    height: 660px;
+    max-height: 660px;
     overflow: hidden;
   }
 
@@ -97,7 +96,7 @@
     background-image: url('/pai-gow/header-bg-square.jpg') !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    background-position: center 40% !important;
+    background-position: center 28% !important;
 
     /* Tighten padding so the art reads as "flush" like Ape Church */
     padding: 0 !important;
@@ -130,7 +129,7 @@
   /* Desktop: move Play button down so it doesn't cover the instruction line.
      IMPORTANT: use !important because the base .controls rule appears later in this file. */
   .controls{
-    top: 176px !important;
+    top: 148px !important;
   }
 
   .controls .btn{
